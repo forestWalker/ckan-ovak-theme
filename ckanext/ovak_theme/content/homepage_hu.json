@@ -1,0 +1,32 @@
+{
+  "municipality_name": "Szegedi Önkormányzat",
+  "portal_title": "Szeged Önkormányzati Adatportál",
+  "nav": {
+    "datasets": "Adatszettek",
+    "visualizations": "Vizualizációk",
+    "information": "Információ"
+  },
+  "search_placeholder": "Keresés",
+  "language_switch_label": "EN",
+  "chips": [
+    "Forgalom monitorozás",
+    "Tömegközlekedés",
+    "Légszennyezés",
+    "Biológiai részecske"
+  ],
+  "summary": {
+    "title": "Projekt összefoglaló",
+    "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+  },
+  "news": {
+    "title": "Hír címe",
+    "date": "Dátum",
+    "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident."
+  },
+  "footer": {
+    "links": [
+      { "label": "Link", "url": "#" },
+      { "label": "Link", "url": "#" }
+    ]
+  }
+}

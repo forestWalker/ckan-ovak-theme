@@ -1,0 +1,336 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #f3f4f6;
+}
+
+.ovak-homepage {
+  min-height: 100vh;
+  background: #f3f4f6;
+  color: #111827;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.ovak-topbar {
+  background: #dceaf6;
+  border-bottom-left-radius: 18px;
+  border-bottom-right-radius: 18px;
+  padding: 10px 0;
+}
+
+.ovak-topbar__inner,
+.ovak-container,
+.ovak-footer__inner {
+  width: min(1120px, calc(100% - 48px));
+  margin: 0 auto;
+}
+
+.ovak-topbar__inner {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  min-height: 56px;
+}
+
+.ovak-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 220px;
+}
+
+.ovak-brand__logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  background: #0d3b66;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.ovak-brand__logo--small {
+  width: 28px;
+  height: 28px;
+  font-size: 10px;
+}
+
+.ovak-brand__text {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.ovak-nav {
+  display: flex;
+  gap: 28px;
+  flex: 1;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.ovak-nav a {
+  color: #111827;
+  text-decoration: none;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.ovak-search {
+  width: 220px;
+  height: 36px;
+  background: #fff;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(120, 170, 210, 0.3);
+  flex-shrink: 0;
+}
+
+.ovak-search input {
+  border: 0;
+  outline: none;
+  width: 100%;
+  background: transparent;
+  font-size: 14px;
+}
+
+.ovak-lang {
+  min-width: 28px;
+  text-align: right;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.ovak-lang a {
+  color: #111827;
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ovak-lang a:hover {
+  text-decoration: underline;
+}
+
+.ovak-container {
+  flex: 1;
+  padding: 40px 0 60px;
+}
+
+.ovak-hero {
+  text-align: center;
+  margin-bottom: 44px;
+}
+
+.ovak-hero h1 {
+  font-size: clamp(32px, 5vw, 52px);
+  line-height: 1.15;
+  margin: 10px 0 28px;
+  font-weight: 500;
+}
+
+.ovak-chips {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.ovak-chip {
+  background: #fff;
+  padding: 10px 18px;
+  border-radius: 999px;
+  box-shadow: 0 3px 10px rgba(173, 216, 255, 0.8);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.ovak-summary {
+  max-width: 980px;
+  margin: 0 auto 46px;
+  text-align: center;
+}
+
+.ovak-summary h2 {
+  font-size: 22px;
+  margin-bottom: 14px;
+  font-weight: 700;
+}
+
+.ovak-summary p {
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.ovak-news-card {
+  max-width: 980px;
+  margin: 0 auto 48px;
+  background: #f8fafc;
+  border-radius: 22px;
+  padding: 28px 30px;
+  box-shadow: 0 4px 12px rgba(173, 216, 255, 0.7);
+}
+
+.ovak-news-card h3 {
+  font-size: clamp(28px, 4vw, 34px);
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+
+.ovak-news-card__date {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+
+.ovak-news-card p {
+  font-size: 14px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.ovak-media-placeholder {
+  width: min(980px, 100%);
+  height: 420px;
+  margin: 0 auto;
+  background: #d1d5db;
+}
+
+.ovak-footer {
+  background: #dceaf6;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  padding: 14px 0;
+  margin-top: auto;
+}
+
+.ovak-footer__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.ovak-footer__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.ovak-footer__links {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.ovak-footer__links a {
+  color: #111827;
+  font-size: 14px;
+  text-decoration: underline;
+}
+
+@media (max-width: 960px) {
+  .ovak-topbar__inner {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .ovak-brand {
+    min-width: auto;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .ovak-nav {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .ovak-search {
+    width: min(320px, 100%);
+  }
+
+  .ovak-lang {
+    min-width: auto;
+  }
+
+  .ovak-news-card {
+    padding: 22px 22px;
+  }
+
+  .ovak-media-placeholder {
+    height: 300px;
+  }
+}
+
+@media (max-width: 640px) {
+  .ovak-topbar__inner,
+  .ovak-container,
+  .ovak-footer__inner {
+    width: min(100% - 24px, 1120px);
+  }
+
+  .ovak-topbar {
+    padding: 12px 0;
+  }
+
+  .ovak-topbar__inner {
+    gap: 14px;
+  }
+
+  .ovak-nav {
+    gap: 14px;
+  }
+
+  .ovak-nav a {
+    font-size: 13px;
+  }
+
+  .ovak-search {
+    width: 100%;
+  }
+
+  .ovak-container {
+    padding: 28px 0 40px;
+  }
+
+  .ovak-chips {
+    gap: 10px;
+  }
+
+  .ovak-chip {
+    font-size: 13px;
+    padding: 9px 14px;
+  }
+
+  .ovak-summary {
+    margin-bottom: 32px;
+  }
+
+  .ovak-news-card {
+    margin-bottom: 32px;
+    border-radius: 16px;
+  }
+
+  .ovak-media-placeholder {
+    height: 220px;
+  }
+
+  .ovak-footer__inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

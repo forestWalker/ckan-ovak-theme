@@ -1,0 +1,32 @@
+{
+  "municipality_name": "Municipality of Szeged",
+  "portal_title": "Szeged Municipality Dataportal",
+  "nav": {
+    "datasets": "Datasets",
+    "visualizations": "Visualizations",
+    "information": "Information"
+  },
+  "search_placeholder": "Search",
+  "language_switch_label": "HU",
+  "chips": [
+    "Traffic monitoring",
+    "Public transport",
+    "Air pollution",
+    "Bio particle"
+  ],
+  "summary": {
+    "title": "Project summary",
+    "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+  },
+  "news": {
+    "title": "News title",
+    "date": "2026-03-19",
+    "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident."
+  },
+  "footer": {
+    "links": [
+      { "label": "Link", "url": "#" },
+      { "label": "Link", "url": "#" }
+    ]
+  }
+}

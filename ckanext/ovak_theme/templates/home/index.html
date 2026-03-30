@@ -1,0 +1,92 @@
+{% ckan_extends %}
+
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="/base/css/custom.css">
+{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+
+{% set lang = h.ovak_get_current_lang() %}
+
+{% if lang == 'hu' %}
+  {% set content = h.ovak_read_json_file('homepage_hu.json') %}
+{% else %}
+  {% set content = h.ovak_read_json_file('homepage_en.json') %}
+{% endif %}
+
+{% block page %}
+<section class="ovak-homepage">
+  <header class="ovak-topbar">
+    <div class="ovak-topbar__inner">
+      <div class="ovak-brand">
+        <div class="ovak-brand__logo">SZ</div>
+        <div class="ovak-brand__text">{{ content.municipality_name }}</div>
+      </div>
+
+      <nav class="ovak-nav" aria-label="Main navigation">
+        <a href="/dataset">{{ content.nav.datasets }}</a>
+        <a href="#">{{ content.nav.visualizations }}</a>
+        <a href="#">{{ content.nav.information }}</a>
+      </nav>
+
+      <div class="ovak-search" role="search">
+        <span class="ovak-search__icon">⌕</span>
+        <input
+          type="text"
+          placeholder="{{ content.search_placeholder }}"
+          aria-label="{{ content.search_placeholder }}"
+        >
+      </div>
+
+      <div class="ovak-lang">
+		<a href="{{ h.ovak_get_language_switch_url() }}">{{ content.language_switch_label }}</a>
+	  </div>
+    </div>
+  </header>
+
+  <main class="ovak-container">
+    <section class="ovak-hero">
+      <h1>{{ content.portal_title }}</h1>
+
+      <div class="ovak-chips">
+        {% for chip in content.chips %}
+          <span class="ovak-chip">{{ chip }}</span>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="ovak-summary">
+      <h2>{{ content.summary.title }}</h2>
+      <p>{{ content.summary.body }}</p>
+    </section>
+
+    <section class="ovak-news-card">
+      <h3>{{ content.news.title }}</h3>
+      <div class="ovak-news-card__date">{{ content.news.date }}</div>
+      <p>{{ content.news.body }}</p>
+    </section>
+
+    <section class="ovak-media-placeholder" aria-label="Media placeholder"></section>
+  </main>
+
+  <footer class="ovak-footer">
+    <div class="ovak-footer__inner">
+      <div class="ovak-footer__brand">
+        <div class="ovak-brand__logo ovak-brand__logo--small">SZ</div>
+        <span>{{ content.municipality_name }}</span>
+      </div>
+
+      <div class="ovak-footer__links">
+        {% for link in content.footer.links %}
+          <a href="{{ link.url }}">{{ link.label }}</a>
+        {% endfor %}
+      </div>
+    </div>
+  </footer>
+</section>
+{% endblock %}
