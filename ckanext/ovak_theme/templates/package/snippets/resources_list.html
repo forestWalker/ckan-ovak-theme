@@ -1,0 +1,47 @@
+{% set lang = h.ovak_get_current_lang() %}
+{% if lang == 'hu' %}
+  {% set content = h.ovak_read_json_file('homepage_hu.json') %}
+{% else %}
+  {% set content = h.ovak_read_json_file('homepage_en.json') %}
+{% endif %}
+
+{% set detail = content.dataset_detail_page %}
+{% set fallback_resource_name = 'Erőforrás' if lang == 'hu' else 'Resource' %}
+{% set download_aria = 'Erőforrás letöltése' if lang == 'hu' else 'Download resource' %}
+
+<section class="ovak-detail-section ovak-detail-section--resources">
+  <h2>{{ detail.resources_title }}</h2>
+
+  {% if resources %}
+    <div class="ovak-resource-list">
+      {% for resource in resources %}
+        {% set resource_name = resource.name or resource.url or fallback_resource_name %}
+        {% set resource_format = resource.format|upper if resource.format else '' %}
+
+        {% if resource.id %}
+          {% set download_href = h.url_for(pkg.type ~ '_resource.download', id=pkg.name, resource_id=resource.id) %}
+          {% set preview_href = h.url_for('ovak_theme.ovak_resource_page', dataset_name=pkg.name, resource_id=resource.id) %}
+        {% else %}
+          {% set download_href = resource.url %}
+          {% set preview_href = resource.url %}
+        {% endif %}
+
+        <div class="ovak-resource-item">
+          <a class="ovak-resource-item__download" href="{{ download_href }}" download aria-label="{{ download_aria }}">
+            <span class="ovak-resource-item__icon">↓</span>
+          </a>
+
+          <a class="ovak-resource-item__main" href="{{ preview_href }}">
+            <span class="ovak-resource-item__name">{{ resource_name }}</span>
+          </a>
+
+          {% if resource_format %}
+            <span class="ovak-resource-item__format">{{ resource_format }}</span>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="ovak-detail-empty">{{ detail.empty.resources }}</p>
+  {% endif %}
+</section>

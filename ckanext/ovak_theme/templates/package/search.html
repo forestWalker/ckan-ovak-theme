@@ -1,0 +1,79 @@
+{% extends "_layout.html" %}
+
+{% set lang = h.ovak_get_current_lang() %}
+{% if lang == 'hu' %}
+  {% set content = h.ovak_read_json_file('homepage_hu.json') %}
+{% else %}
+  {% set content = h.ovak_read_json_file('homepage_en.json') %}
+{% endif %}
+
+{% set page_title = content.dataset_page.title %}
+{% set page_intro = content.dataset_page.intro %}
+{% set dataset_search_placeholder = content.dataset_page.search_placeholder %}
+{% set results_found_suffix = content.dataset_page.results_found_suffix %}
+{% set no_results_text = content.dataset_page.no_results %}
+{% set sort_label = content.dataset_page.order_by %}
+
+{% set sort_options = [
+  {'label_hu': 'Relevancia', 'label_en': 'Relevance', 'value': 'score desc, metadata_modified desc'},
+  {'label_hu': 'Név (A-Z)', 'label_en': 'Name Ascending', 'value': 'title_string asc'},
+  {'label_hu': 'Név (Z-A)', 'label_en': 'Name Descending', 'value': 'title_string desc'},
+  {'label_hu': 'Utoljára módosítva', 'label_en': 'Last Modified', 'value': 'metadata_modified desc'}
+] %}
+
+{% set current_sort = request.args.get('sort', 'score desc, metadata_modified desc') %}
+
+{% block page_class %} ovak-datasets-page ovak-datasets-page--simple{% endblock %}
+
+{% block content %}
+  <section class="ovak-datasets-hero">
+    <h1>{{ page_title }}</h1>
+    <p class="ovak-datasets-hero__text">{{ page_intro }}</p>
+  </section>
+
+  <section class="ovak-simple-searchbar">
+    <div class="ovak-simple-search">
+      <span class="ovak-simple-search__icon">⌕</span>
+      <input
+        id="ovakDatasetSearch"
+        type="text"
+        value="{{ request.args.get('q', '') }}"
+        placeholder="{{ dataset_search_placeholder }}"
+        aria-label="{{ dataset_search_placeholder }}"
+      >
+    </div>
+  </section>
+
+  <section class="ovak-simple-toolbar">
+    <div class="ovak-simple-count">
+      {{ page.item_count }} {{ results_found_suffix }}
+    </div>
+
+    <div class="ovak-simple-sort">
+      <label for="ovakSortSelect">{{ sort_label }}</label>
+      <select id="ovakSortSelect">
+        {% for opt in sort_options %}
+          <option value="{{ opt.value }}"{% if current_sort == opt.value %} selected{% endif %}>
+            {{ opt.label_hu if lang == 'hu' else opt.label_en }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+  </section>
+
+  <section class="ovak-simple-results">
+    {% if page.items %}
+      {% for package in page.items %}
+        {% snippet "package/snippets/package_item.html", package=package %}
+      {% endfor %}
+    {% else %}
+      <div class="ovak-simple-empty">
+        {{ no_results_text }}
+      </div>
+    {% endif %}
+  </section>
+
+  <div class="ovak-simple-pagination">
+    {{ page.pager(q=request.args.get('q', ''), sort=request.args.get('sort', '')) }}
+  </div>
+{% endblock %}

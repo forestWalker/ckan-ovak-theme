@@ -1,0 +1,373 @@
+{% extends "_layout.html" %}
+
+{% set lang = h.ovak_get_current_lang() %}
+{% if lang == 'hu' %}
+  {% set content = h.ovak_read_json_file('homepage_hu.json') %}
+{% else %}
+  {% set content = h.ovak_read_json_file('homepage_en.json') %}
+{% endif %}
+
+{% set resource_page = content.resource_page %}
+{% set dataset_title = h.dataset_display_name(package) %}
+{% set resource_title = h.resource_display_name(resource) %}
+{% set resource_description = h.get_translated(resource, 'description') if resource.description else '' %}
+
+{% block page_class %} ovak-resource-page{% endblock %}
+
+{% block content %}
+  <nav class="ovak-breadcrumbs" aria-label="Breadcrumb">
+    <a href="/">{{ resource_page.breadcrumbs.home }}</a>
+    <span class="ovak-breadcrumbs__sep">›</span>
+    <a href="{{ h.url_for('dataset.search') }}">{{ resource_page.breadcrumbs.datasets }}</a>
+    <span class="ovak-breadcrumbs__sep">›</span>
+    <a href="{{ h.url_for(package.type ~ '.read', id=package.name) }}">{{ dataset_title }}</a>
+    <span class="ovak-breadcrumbs__sep">›</span>
+    <span>{{ resource_title }}</span>
+  </nav>
+
+  <section class="ovak-resource-hero">
+    <h1>{{ dataset_title }}</h1>
+
+    {% if resource_description %}
+      <div class="ovak-resource-description">
+        {{ h.render_markdown(resource_description) }}
+      </div>
+    {% else %}
+      <p class="ovak-resource-description ovak-resource-description--empty">
+        {{ resource_page.empty_description }}
+      </p>
+    {% endif %}
+  </section>
+
+  <section class="ovak-resource-tab-row">
+    <button type="button" class="ovak-resource-tab is-active" data-ovak-tab="table">
+      <span class="ovak-resource-tab__label">
+        {{ resource_page.views.table if resource_page.views and resource_page.views.table else 'Table' }}
+      </span>
+    </button>
+
+    <button type="button" class="ovak-resource-tab" data-ovak-tab="bar">
+      <span class="ovak-resource-tab__label">
+        {{ 'Oszlopdiagram' if lang == 'hu' else 'Bar chart' }}
+      </span>
+    </button>
+
+    <button type="button" class="ovak-resource-tab" data-ovak-tab="line">
+      <span class="ovak-resource-tab__label">
+        {{ 'Vonaldiagram' if lang == 'hu' else 'Line chart' }}
+      </span>
+    </button>
+
+    <button type="button" class="ovak-resource-tab" data-ovak-tab="pie">
+      <span class="ovak-resource-tab__label">
+        {{ 'Kördiagram' if lang == 'hu' else 'Pie chart' }}
+      </span>
+    </button>
+  </section>
+
+  <section class="ovak-resource-view-body">
+    <div class="ovak-resource-panel is-active" data-ovak-panel="table">
+      <div class="ovak-table-card">
+        <div class="ovak-table-state" id="ovak-table-state">
+          {{ 'Betöltés...' if lang == 'hu' else 'Loading...' }}
+        </div>
+        <div class="ovak-table-scroll" id="ovak-table-scroll" hidden>
+          <table class="ovak-data-table">
+            <thead id="ovak-data-thead"></thead>
+            <tbody id="ovak-data-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="ovak-resource-panel" data-ovak-panel="bar">
+      <div class="ovak-chart-card">
+        <div class="ovak-chart-state" id="ovak-bar-state">
+          {{ 'Betöltés...' if lang == 'hu' else 'Loading...' }}
+        </div>
+        <div class="ovak-chart-wrap">
+          <canvas id="ovak-bar-chart" hidden></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="ovak-resource-panel" data-ovak-panel="line">
+      <div class="ovak-chart-card">
+        <div class="ovak-chart-state" id="ovak-line-state">
+          {{ 'Betöltés...' if lang == 'hu' else 'Loading...' }}
+        </div>
+        <div class="ovak-chart-wrap">
+          <canvas id="ovak-line-chart" hidden></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="ovak-resource-panel" data-ovak-panel="pie">
+      <div class="ovak-chart-card">
+        <div class="ovak-chart-state" id="ovak-pie-state">
+          {{ 'Betöltés...' if lang == 'hu' else 'Loading...' }}
+        </div>
+        <div class="ovak-chart-wrap">
+          <canvas id="ovak-pie-chart" hidden></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const lang = {{ ('hu' if lang == 'hu' else 'en') | tojson }};
+      const resourceId = {{ resource.id | tojson }};
+      const datastoreUrl = '/api/3/action/datastore_search?resource_id=' + encodeURIComponent(resourceId) + '&limit=100';
+
+      const tableState = document.getElementById('ovak-table-state');
+      const tableScroll = document.getElementById('ovak-table-scroll');
+      const thead = document.getElementById('ovak-data-thead');
+      const tbody = document.getElementById('ovak-data-tbody');
+
+      const barState = document.getElementById('ovak-bar-state');
+      const lineState = document.getElementById('ovak-line-state');
+      const pieState = document.getElementById('ovak-pie-state');
+
+      const barCanvas = document.getElementById('ovak-bar-chart');
+      const lineCanvas = document.getElementById('ovak-line-chart');
+      const pieCanvas = document.getElementById('ovak-pie-chart');
+
+      let barChart = null;
+      let lineChart = null;
+      let pieChart = null;
+
+      function t(hu, en) {
+        return lang === 'hu' ? hu : en;
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? '')
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#039;');
+      }
+
+      function isNumericValue(value) {
+        if (value === null || value === undefined || value === '') return false;
+        return !isNaN(Number(String(value).replace(',', '.')));
+      }
+
+      function toNumber(value) {
+        return Number(String(value).replace(',', '.'));
+      }
+
+      function buildTable(fields, records) {
+        thead.innerHTML = `
+          <tr>
+            ${fields.map(field => `<th>${escapeHtml(field)}</th>`).join('')}
+          </tr>
+        `;
+
+        tbody.innerHTML = records.map(row => `
+          <tr>
+            ${fields.map(field => `<td>${escapeHtml(row[field])}</td>`).join('')}
+          </tr>
+        `).join('');
+
+        tableState.hidden = true;
+        tableScroll.hidden = false;
+      }
+
+      function findBestDimensions(records, fields) {
+        const numericFields = fields.filter(field =>
+          records.some(row => isNumericValue(row[field]))
+        );
+
+        const labelFields = fields.filter(field => !numericFields.includes(field));
+
+        return {
+          labelField: labelFields[0] || fields[0] || null,
+          numericField: numericFields[0] || null
+        };
+      }
+
+      function buildBarChart(records, labelField, numericField) {
+        if (!labelField || !numericField) {
+          barState.textContent = t('Nincs elég adat oszlopdiagramhoz.', 'Not enough data for bar chart.');
+          return;
+        }
+
+        const rows = records.filter(row => isNumericValue(row[numericField])).slice(0, 20);
+        if (!rows.length) {
+          barState.textContent = t('Nincs numerikus adat.', 'No numeric data.');
+          return;
+        }
+
+        const labels = rows.map(row => String(row[labelField] ?? ''));
+        const values = rows.map(row => toNumber(row[numericField]));
+
+        barCanvas.hidden = false;
+        barState.hidden = true;
+
+        if (barChart) {
+          barChart.destroy();
+        }
+
+        barChart = new Chart(barCanvas.getContext('2d'), {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [{
+              label: numericField,
+              data: values
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+      }
+
+      function buildLineChart(records, labelField, numericField) {
+        if (!labelField || !numericField) {
+          lineState.textContent = t('Nincs elég adat vonaldiagramhoz.', 'Not enough data for line chart.');
+          return;
+        }
+
+        const rows = records.filter(row => isNumericValue(row[numericField])).slice(0, 30);
+        if (!rows.length) {
+          lineState.textContent = t('Nincs numerikus adat.', 'No numeric data.');
+          return;
+        }
+
+        const labels = rows.map(row => String(row[labelField] ?? ''));
+        const values = rows.map(row => toNumber(row[numericField]));
+
+        lineCanvas.hidden = false;
+        lineState.hidden = true;
+
+        if (lineChart) {
+          lineChart.destroy();
+        }
+
+        lineChart = new Chart(lineCanvas.getContext('2d'), {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [{
+              label: numericField,
+              data: values
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+      }
+
+      function buildPieChart(records, labelField, numericField) {
+        if (!labelField || !numericField) {
+          pieState.textContent = t('Nincs elég adat kördiagramhoz.', 'Not enough data for pie chart.');
+          return;
+        }
+
+        const grouped = new Map();
+        records.forEach(row => {
+          const label = String(row[labelField] ?? t('Ismeretlen', 'Unknown'));
+          const value = isNumericValue(row[numericField]) ? toNumber(row[numericField]) : 0;
+          grouped.set(label, (grouped.get(label) || 0) + value);
+        });
+
+        const labels = Array.from(grouped.keys()).slice(0, 8);
+        const values = Array.from(grouped.values()).slice(0, 8);
+
+        if (!labels.length) {
+          pieState.textContent = t('Nincs adat kördiagramhoz.', 'No data for pie chart.');
+          return;
+        }
+
+        pieCanvas.hidden = false;
+        pieState.hidden = true;
+
+        if (pieChart) {
+          pieChart.destroy();
+        }
+
+        pieChart = new Chart(pieCanvas.getContext('2d'), {
+          type: 'pie',
+          data: {
+            labels,
+            datasets: [{
+              data: values
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false
+          }
+        });
+      }
+
+      function activateTab(tabName) {
+        document.querySelectorAll('[data-ovak-tab]').forEach(btn => {
+          btn.classList.toggle('is-active', btn.getAttribute('data-ovak-tab') === tabName);
+        });
+
+        document.querySelectorAll('[data-ovak-panel]').forEach(panel => {
+          panel.classList.toggle('is-active', panel.getAttribute('data-ovak-panel') === tabName);
+        });
+      }
+
+      document.querySelectorAll('[data-ovak-tab]').forEach(btn => {
+        btn.addEventListener('click', function () {
+          activateTab(this.getAttribute('data-ovak-tab'));
+        });
+      });
+
+      fetch(datastoreUrl)
+        .then(response => response.json())
+        .then(data => {
+          if (!data.success || !data.result || !data.result.records) {
+            throw new Error('Invalid datastore response');
+          }
+
+          const fields = (data.result.fields || [])
+            .map(field => field.id)
+            .filter(id => id !== '_id');
+
+          const records = (data.result.records || []).map(record => {
+            const cleaned = {};
+            fields.forEach(field => {
+              cleaned[field] = record[field];
+            });
+            return cleaned;
+          });
+
+          if (!fields.length || !records.length) {
+            tableState.textContent = t('Nincs megjeleníthető adat.', 'No data available.');
+            barState.textContent = t('Nincs megjeleníthető adat.', 'No data available.');
+            lineState.textContent = t('Nincs megjeleníthető adat.', 'No data available.');
+            pieState.textContent = t('Nincs megjeleníthető adat.', 'No data available.');
+            return;
+          }
+
+          buildTable(fields, records.slice(0, 50));
+
+          const dims = findBestDimensions(records, fields);
+          buildBarChart(records, dims.labelField, dims.numericField);
+          buildLineChart(records, dims.labelField, dims.numericField);
+          buildPieChart(records, dims.labelField, dims.numericField);
+        })
+        .catch(() => {
+          tableState.textContent = t(
+            'Nem sikerült betölteni az adatokat. Valószínűleg a resource még nincs Datastore-ba feldolgozva.',
+            'Could not load the data. The resource is probably not processed into Datastore yet.'
+          );
+          barState.textContent = t('A grafikon nem tölthető be.', 'The chart could not be loaded.');
+          lineState.textContent = t('A grafikon nem tölthető be.', 'The chart could not be loaded.');
+          pieState.textContent = t('A grafikon nem tölthető be.', 'The chart could not be loaded.');
+        });
+    });
+  </script>
+{% endblock %}

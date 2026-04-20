@@ -1,0 +1,98 @@
+{% set lang = h.ovak_get_current_lang() %}
+{% if lang == 'hu' %}
+  {% set content = h.ovak_read_json_file('homepage_hu.json') %}
+{% else %}
+  {% set content = h.ovak_read_json_file('homepage_en.json') %}
+{% endif %}
+
+{% set detail = content.dataset_detail_page %}
+{% set f = detail.fields %}
+
+<section class="ovak-detail-section ovak-detail-section--additional">
+  <h2>{{ detail.additional_info_title }}</h2>
+
+  <table class="ovak-detail-table">
+    <thead>
+      <tr>
+        <th>{{ f.field }}</th>
+        <th>{{ f.value }}</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% if pkg_dict.url %}
+        <tr>
+          <td>{{ f.source }}</td>
+          <td>
+            {% if h.is_url(pkg_dict.url) %}
+              <a href="{{ pkg_dict.url }}" target="_blank" rel="noopener noreferrer">{{ pkg_dict.url }}</a>
+            {% else %}
+              {{ pkg_dict.url }}
+            {% endif %}
+          </td>
+        </tr>
+      {% endif %}
+
+      {% if pkg_dict.author_email %}
+        <tr>
+          <td>{{ f.author }}</td>
+          <td>{{ h.mail_to(email_address=pkg_dict.author_email, name=pkg_dict.author) }}</td>
+        </tr>
+      {% elif pkg_dict.author %}
+        <tr>
+          <td>{{ f.author }}</td>
+          <td>{{ pkg_dict.author }}</td>
+        </tr>
+      {% endif %}
+
+      {% if pkg_dict.maintainer_email %}
+        <tr>
+          <td>{{ f.maintainer }}</td>
+          <td>{{ h.mail_to(email_address=pkg_dict.maintainer_email, name=pkg_dict.maintainer) }}</td>
+        </tr>
+      {% elif pkg_dict.maintainer %}
+        <tr>
+          <td>{{ f.maintainer }}</td>
+          <td>{{ pkg_dict.maintainer }}</td>
+        </tr>
+      {% endif %}
+
+      {% if pkg_dict.version %}
+        <tr>
+          <td>{{ f.version }}</td>
+          <td>{{ pkg_dict.version }}</td>
+        </tr>
+      {% endif %}
+
+      {% if h.check_access('package_update', {'id': pkg_dict.id}) %}
+        <tr>
+          <td>{{ f.state }}</td>
+          <td>{{ _(pkg_dict.state) }}</td>
+        </tr>
+      {% endif %}
+
+      {% if pkg_dict.metadata_modified %}
+        <tr>
+          <td>{{ f.last_updated }}</td>
+          <td>{% snippet 'snippets/local_friendly_datetime.html', datetime_obj=pkg_dict.metadata_modified %}</td>
+        </tr>
+      {% endif %}
+
+      {% if pkg_dict.metadata_created %}
+        <tr>
+          <td>{{ f.created }}</td>
+          <td>{% snippet 'snippets/local_friendly_datetime.html', datetime_obj=pkg_dict.metadata_created %}</td>
+        </tr>
+      {% endif %}
+
+      {% for extra in h.sorted_extras(pkg_dict.extras) %}
+        {% set key, value = extra %}
+        <tr>
+          <td>{{ _(key|e) }}</td>
+          <td>{{ value }}</td>
+        </tr>
+      {% endfor %}
+
+    </tbody>
+  </table>
+</section>

@@ -2,17 +2,29 @@
   "municipality_name": "Szegedi Önkormányzat",
   "portal_title": "Szeged Önkormányzati Adatportál",
   "nav": {
-    "datasets": "Adatszettek",
+    "datasets": "Adatkészletek",
     "visualizations": "Vizualizációk",
     "information": "Információ"
   },
   "search_placeholder": "Keresés",
   "language_switch_label": "EN",
   "chips": [
-    "Forgalom monitorozás",
-    "Tömegközlekedés",
-    "Légszennyezés",
-    "Biológiai részecske"
+    {
+      "label": "Forgalom monitorozás",
+      "icon": "/base/images/icons/traffic.svg"
+    },
+    {
+      "label": "Tömegközlekedés",
+      "icon": "/base/images/icons/public-transport.svg"
+    },
+    {
+      "label": "Légszennyezés",
+      "icon": "/base/images/icons/air-quality.svg"
+    },
+    {
+      "label": "Biológiai részecske",
+      "icon": "/base/images/icons/bio-particle.svg"
+    }
   ],
   "summary": {
     "title": "Projekt összefoglaló",
@@ -23,6 +35,125 @@
     "date": "Dátum",
     "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident."
   },
+  "dataset_page": {
+    "title": "Adatkészletek",
+    "intro": "Böngéssz, keress és fedezd fel az elérhető nyilvános adatkészleteket.",
+    "filters_title": "Szűrők",
+    "results_found_suffix": "adatkészlet található",
+    "order_by": "Rendezés",
+    "no_results": "Nincs találat",
+    "search_placeholder": "Adatkészletek keresése...",
+    "facet_titles": {
+      "organization": "Szervezetek",
+      "groups": "Csoportok",
+      "tags": "Címkék",
+      "res_format": "Formátumok",
+      "license_id": "Licencek"
+    }
+  },
+  "dataset_detail_page": {
+    "breadcrumbs": {
+      "home": "Kezdőlap",
+      "datasets": "Adatkészletek"
+    },
+    "resources_title": "Adatok",
+    "tags_title": "Címkék",
+    "additional_info_title": "További információk",
+    "fields": {
+      "source": "Forrás",
+      "author": "Szerző",
+      "maintainer": "Karbantartó",
+      "version": "Verzió",
+      "state": "Állapot",
+      "last_updated": "Utoljára frissítve",
+      "created": "Létrehozva",
+      "field": "Mező",
+      "value": "Érték"
+    },
+    "empty": {
+      "description": "Ehhez az adatkészlethez nincs leírás.",
+      "resources": "Ehhez az adatkészlethez nincs adat.",
+      "tags": "Nincsenek címkék."
+    }
+  },
+  "resource_page": {
+    "breadcrumbs": {
+      "home": "Kezdőlap",
+      "datasets": "Adatkészletek"
+    },
+    "views": {
+      "table": "Táblázat",
+      "chart": "Grafikon",
+      "fullscreen": "Teljes képernyő",
+      "embed": "Beágyazás"
+    },
+    "empty_description": "Ehhez az erőforráshoz nincs leírás."
+  },
+  "information_page": {
+  "breadcrumbs": {
+    "home": "Kezdőlap"
+  },
+  "image_alt": "Szeged belvárosa a Dóm térrel",
+  "lead": "A Szeged–Timișoara Data Space (STiDS) projekt egy innovatív, határokon átnyúló kezdeményezés, amelynek célja egy interoperábilis, skálázható és biztonságos városi adatmegosztási ökoszisztéma létrehozása.",
+  "sections": [
+    {
+      "title": "Szeged–Timișoara Data Space (STiDS)",
+      "paragraphs": [
+        "A Szeged–Timișoara Data Space (STiDS) projekt egy innovatív, határokon átnyúló kezdeményezés, amelynek célja egy interoperábilis, skálázható és biztonságos városi adatmegosztási ökoszisztéma létrehozása. A projekt Szeged (Magyarország) és Timișoara (Románia) együttműködésére épül, és a digitális transzformáció eszközeivel kíván hozzájárulni az intelligensebb, fenntarthatóbb és élhetőbb városi környezet kialakításához.",
+        "A kezdeményezés szorosan illeszkedik az Európai Unió Data Space for Smart Communities (DS4SSCC) programjához, amelynek célja egységes, szabványosított és interoperábilis adatmegosztási keretrendszerek kialakítása az európai városok számára. A projekt ennek megfelelően nemcsak technológiai fejlesztés, hanem egyben validációs pilot is, amely aktívan hozzájárul az európai adatpiac és adatgazdaság fejlődéséhez."
+      ]
+    },
+    {
+      "title": "Közös jövőkép: adatvezérelt városfejlesztés",
+      "paragraphs": [
+        "Szeged és Timișoara együttműködése egyedülálló lehetőséget teremt arra, hogy két, hasonló társadalmi és gazdasági kihívásokkal küzdő közép-kelet-európai város közösen fejlesszen és teszteljen adatvezérelt megoldásokat. A projekt alapját a már meglévő városi adatplatformok – Szegeden az OVAK, Timișoarában a CKAN-alapú adatplatform – adják, amelyek továbbfejlesztésével egy egységes, federált adatmegosztási tér jön létre.",
+        "A projekt célja, hogy ezek az infrastruktúrák túllépjenek a jelenlegi, elszigetelt működésen, és egy interoperábilis, valós idejű adatcserére képes rendszerként működjenek. Ez lehetővé teszi a különböző városi rendszerek – közlekedés, környezetvédelem, egészségügy – integrált kezelését és optimalizálását."
+      ]
+    },
+    {
+      "title": "Fókuszterületek: mobilitás és levegőminőség integrált kezelése",
+      "paragraphs": [
+        "A STiDS projekt két, egymással szorosan összefüggő városi kihívásra fókuszál: a városi mobilitás optimalizálására és a levegőminőség javítására. A projekt egyik alapvető célja, hogy e két területet ne különálló problémaként kezelje, hanem egy integrált, adatvezérelt rendszerben vizsgálja és fejlessze mind Szeged, mind Timișoara esetében.",
+        "Mindkét városban jelentős kihívást jelent a közlekedési rendszerek hatékonyságának biztosítása, különösen a növekvő városi forgalom, az ingázás és a turizmus hatásai miatt. A projekt keretében a közlekedési adatok és IoT-alapú szenzoradatok integrálása lehetővé teszi a forgalmi mintázatok valós idejű elemzését, a torlódások csökkentését, valamint a közösségi közlekedés optimalizálását.",
+        "Ezzel párhuzamosan mindkét város számára kiemelt jelentőségű a levegőminőség javítása és a környezeti terhelés csökkentése. A projekt során kiépített és bővített szenzorhálózatok révén részletes, valós idejű környezeti adatok állnak rendelkezésre, amelyek támogatják a szennyezési források azonosítását, valamint a célzott, adatvezérelt beavatkozásokat.",
+        "A két terület szoros összefüggésben áll egymással: a közlekedési mintázatok közvetlen hatással vannak a levegőminőségre. A STiDS projekt egyik legfontosabb innovációja éppen ezen összefüggések feltárása és kihasználása. Az integrált adatplatform lehetővé teszi, hogy a mobilitási adatok alapján optimalizált közlekedési stratégiák egyben a környezeti terhelés csökkentését is szolgálják, ezáltal komplex, rendszerszintű városfejlesztési döntések szülessenek."
+      ]
+    },
+    {
+      "title": "Technológiai megközelítés és adatarchitektúra",
+      "paragraphs": [
+        "A projekt a legkorszerűbb nyílt szabványokra és technológiákra épül, különös tekintettel a FIWARE ökoszisztémára és az NGSI-LD adatmodellre.",
+        "A meglévő rendszerek átalakítása során kiemelt szerepet kap az interoperábilis adatmodellek használata, a valós idejű adatfeldolgozás és kontextuskezelés, a federált adatkatalógusok alkalmazása, a biztonságos hozzáférés-kezelés, valamint a geospaciális adatintegráció.",
+        "A cél egy olyan adatplatform létrehozása, amely nemcsak a két város között biztosít adatcserét, hanem hosszú távon más európai városok számára is integrálható és skálázható megoldást kínál."
+      ]
+    },
+    {
+      "title": "Európai szintű illeszkedés és hatás",
+      "paragraphs": [
+        "A STiDS projekt szorosan illeszkedik az Európai Zöld Megállapodás és a Digitális Európa Program célkitűzéseihez. A projekt hozzájárul a fenntartható mobilitás fejlesztéséhez, a „zero pollution” célok eléréséhez, a városi szolgáltatások digitalizációjához, valamint az európai adatgazdaság erősítéséhez.",
+        "Emellett a projekt aktív szerepet vállal a DS4SSCC Blueprint validálásában is, amely az európai városi adatplatformok jövőbeli szabványosításának alapját képezi."
+      ]
+    },
+    {
+      "title": "Többszereplős együttműködés",
+      "paragraphs": [
+        "A STiDS projekt egy szoros, határokon átnyúló együttműködés keretében valósul meg, amely Szeged és Timișoara testvérvárosi kapcsolatára épít. Ez a partnerség nemcsak történelmi és kulturális alapokon nyugszik, hanem egyre erősebb szerepet játszik a közös digitális és fenntarthatósági fejlesztésekben is.",
+        "A projekt vezető partnere Szeged Megyei Jogú Város Önkormányzata, míg a romániai pilot helyszínt Timișoara Önkormányzata képviseli. A két város biztosítja a stratégiai irányítást, valamint a helyi adatplatformok és városi adatkészletek rendelkezésre bocsátását.",
+        "A közlekedési és mobilitási adatok biztosításában kulcsszerepet játszik a Szegedi Közlekedési Társaság (SZKT), valamint a Timișoarai Közlekedési Vállalat (STPT), amelyek aktívan részt vesznek a városi közlekedési rendszerek adatvezérelt fejlesztésében és optimalizálásában.",
+        "A technológiai megvalósítást és az adatplatformok fejlesztését több ipari és IT partner támogatja, köztük a RITEK Zrt., a GriffSoft Zrt. és a Frontier Penta. A projektben részt vesz a Timișoarai Műszaki Egyetem (Universitatea Politehnica Timișoara, UPT) is, amely a kutatási, validációs és innovációs tevékenységekhez járul hozzá.",
+        "A projekt technológiai vezetője és konzorciumi koordinátora a Clarity Consulting, amely felel a projektmenedzsmentért, a minőségbiztosításért, valamint az adatplatform- és AI-megoldások fejlesztéséért. A nemzetközi együttműködés és tudástranszfer erősítésében a Rockwood Digital Europe támogatja a konzorcium munkáját.",
+        "Ez a partnerségi struktúra biztosítja, hogy a projekt egyszerre építsen a helyi önkormányzati tapasztalatokra és a nemzetközi technológiai szakértelemre, miközben elősegíti a határokon átnyúló adatmegosztás gyakorlati megvalósítását és hosszú távú fenntarthatóságát."
+      ]
+    },
+    {
+      "title": "Várható eredmények és hosszú távú hatás",
+      "paragraphs": [
+        "A STiDS projekt eredményeként javul a városi közlekedés hatékonysága és fenntarthatósága, csökken a légszennyezés, erősödik az adatvezérelt döntéshozatal, valamint nő a lakosság bizalma a digitális közszolgáltatások iránt.",
+        "Hosszú távon a projekt egy replikálható modellt kínál más európai városok számára, különösen a közép-kelet-európai régióban, hozzájárulva egy egységes európai adatpiac kialakulásához."
+      ]
+    }
+  ]
+},
   "footer": {
     "links": [
       { "label": "Link", "url": "#" },

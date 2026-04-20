@@ -1,0 +1,33 @@
+{% set lang = h.ovak_get_current_lang() %}
+{% set package_title = h.dataset_display_name(package) %}
+{% set package_notes = h.get_translated(package, 'notes') if package.notes else '' %}
+{% set first_resource = package.resources[0] if package.resources else none %}
+
+{% if first_resource %}
+  {% set resource_url = h.url_for('dataset_resource.download', id=package.name, resource_id=first_resource.id) %}
+{% else %}
+  {% set resource_url = h.url_for(package.type ~ '.read', id=package.name) %}
+{% endif %}
+
+{% set resource_format = first_resource.format|upper if first_resource and first_resource.format else 'DATA' %}
+
+<article class="ovak-simple-card">
+  <h2 class="ovak-simple-card__title">
+    <a href="{{ h.url_for(package.type ~ '.read', id=package.name) }}">{{ package_title }}</a>
+  </h2>
+
+  <p class="ovak-simple-card__description">
+    {% if package_notes %}
+      {{ h.markdown_extract(package_notes, extract_length=220) }}
+    {% else %}
+      {{ "Ehhez az adatkészlethez nincs leírás." if lang == "hu" else "There is no description for this dataset." }}
+    {% endif %}
+  </p>
+
+  <div class="ovak-simple-card__actions">
+    <a class="ovak-simple-card__download" href="{{ resource_url }}" target="_blank" rel="noopener noreferrer">
+      <span>{{ resource_format }} {{ "fájl letöltése" if lang == "hu" else "file download" }}</span>
+      <img src="/base/images/icons/download.svg" alt="" class="ovak-simple-card__download-icon">
+    </a>
+  </div>
+</article>

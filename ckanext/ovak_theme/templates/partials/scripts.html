@@ -1,0 +1,60 @@
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  document.cookie = 'ovak_lang={{ lang }}; path=/; max-age=31536000; SameSite=Lax';
+
+  const currentUrl = new URL(window.location.href);
+  if (currentUrl.searchParams.has('lang')) {
+    currentUrl.searchParams.delete('lang');
+    const cleanUrl = currentUrl.pathname + (currentUrl.search ? currentUrl.search : '') + currentUrl.hash;
+    window.history.replaceState({}, '', cleanUrl);
+  }
+
+  const langToggle = document.querySelector('.ovak-lang-toggle');
+  if (langToggle) {
+    langToggle.addEventListener('click', function (e) {
+      e.preventDefault();
+      const targetLang = this.getAttribute('data-target-lang');
+      document.cookie = 'ovak_lang=' + targetLang + '; path=/; max-age=31536000; SameSite=Lax';
+      window.location.reload();
+    });
+  }
+
+  const searchInput = document.getElementById('ovakDatasetSearch');
+  if (searchInput) {
+    searchInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        const url = new URL(window.location.href);
+        if (this.value.trim()) {
+          url.searchParams.set('q', this.value.trim());
+        } else {
+          url.searchParams.delete('q');
+        }
+        window.location.href = url.pathname + (url.searchParams.toString() ? '?' + url.searchParams.toString() : '');
+      }
+    });
+  }
+
+  const sortSelect = document.getElementById('ovakSortSelect');
+  if (sortSelect) {
+    sortSelect.addEventListener('change', function () {
+      const url = new URL(window.location.href);
+      if (this.value) {
+        url.searchParams.set('sort', this.value);
+      } else {
+        url.searchParams.delete('sort');
+      }
+      window.location.href = url.pathname + (url.searchParams.toString() ? '?' + url.searchParams.toString() : '');
+    });
+  }
+
+  const chips = document.querySelectorAll('[data-ovak-viz-chip]');
+  chips.forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      chips.forEach(function (btn) {
+        btn.classList.remove('is-active');
+      });
+      this.classList.add('is-active');
+    });
+  });
+});
+</script>

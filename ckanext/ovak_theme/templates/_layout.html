@@ -1,0 +1,33 @@
+{% extends "page.html" %}
+
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="/base/css/custom.css">
+{% endblock %}
+
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% set lang = h.ovak_get_current_lang() %}
+
+{% if lang == 'hu' %}
+  {% set content = h.ovak_read_json_file('homepage_hu.json') %}
+{% else %}
+  {% set content = h.ovak_read_json_file('homepage_en.json') %}
+{% endif %}
+
+{% block page %}
+<section class="ovak-homepage{% block page_class %}{% endblock %}">
+  {% include "partials/header.html" %}
+
+  <main class="ovak-container">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% block page_footer %}
+    {% include "partials/footer.html" %}
+  {% endblock %}
+</section>
+
+{% include "partials/scripts.html" %}
+{% endblock %}

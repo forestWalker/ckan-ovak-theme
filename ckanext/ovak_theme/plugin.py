@@ -3,6 +3,7 @@ import json
 
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
+from flask import Blueprint
 
 
 def read_json_file(filename: str) -> dict:
@@ -31,6 +32,16 @@ def read_json_file(filename: str) -> dict:
         },
         "footer": {
             "links": []
+        },
+        "resource_page": {
+            "breadcrumbs": {
+                "home": "Home",
+                "datasets": "Datasets"
+            },
+            "empty_description": "No description is available for this resource.",
+            "table_button": "Table",
+            "chart_button": "Chart",
+            "download_button": "Download"
         }
     }
 
@@ -43,6 +54,9 @@ def read_json_file(filename: str) -> dict:
 
         if not isinstance(data, dict):
             return fallback
+
+        if "resource_page" not in data:
+            data["resource_page"] = fallback["resource_page"]
 
         return data
 
@@ -69,6 +83,16 @@ def read_json_file(filename: str) -> dict:
             },
             "footer": {
                 "links": []
+            },
+            "resource_page": {
+                "breadcrumbs": {
+                    "home": "Home",
+                    "datasets": "Datasets"
+                },
+                "empty_description": "No description is available for this resource.",
+                "table_button": "Table",
+                "chart_button": "Chart",
+                "download_button": "Download"
             }
         }
 
@@ -76,9 +100,13 @@ def read_json_file(filename: str) -> dict:
 def get_current_lang() -> str:
     request = toolkit.request
 
-    lang = request.args.get("lang")
-    if lang in ("hu", "en"):
-        return lang
+    cookie_lang = request.cookies.get("ovak_lang")
+    if cookie_lang in ("hu", "en"):
+        return cookie_lang
+
+    query_lang = request.args.get("lang")
+    if query_lang in ("hu", "en"):
+        return query_lang
 
     return "en"
 
@@ -101,9 +129,46 @@ def get_language_switch_url() -> str:
     return f"{path}?lang={new_lang}"
 
 
+def visualizations_page():
+    return toolkit.render("home/visualizations.html")
+
+
+def information_page():
+    return toolkit.render("home/information.html")
+
+
+def ovak_resource_page(dataset_name: str, resource_id: str):
+    context = {
+        "user": getattr(toolkit.g, "user", None),
+        "auth_user_obj": getattr(toolkit.g, "userobj", None),
+        "ignore_auth": True,
+    }
+
+    package = toolkit.get_action("package_show")(context, {"id": dataset_name})
+
+    resource = None
+    for res in package.get("resources", []):
+        if res.get("id") == resource_id:
+            resource = res
+            break
+
+    if not resource:
+        toolkit.abort(404, "Resource not found")
+
+    return toolkit.render(
+        "package/ovak_resource_csv.html",
+        extra_vars={
+            "package": package,
+            "pkg_dict": package,
+            "resource": resource
+        }
+    )
+
+
 class OvakThemePlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.ITemplateHelpers)
+    plugins.implements(plugins.IBlueprint)
 
     def update_config(self, config):
         toolkit.add_template_directory(config, "templates")
@@ -115,3 +180,29 @@ class OvakThemePlugin(plugins.SingletonPlugin):
             "ovak_get_current_lang": get_current_lang,
             "ovak_get_language_switch_url": get_language_switch_url,
         }
+
+    def get_blueprint(self):
+        blueprint = Blueprint(
+            "ovak_theme",
+            __name__
+        )
+
+        blueprint.add_url_rule(
+            "/visualizations",
+            "visualizations",
+            visualizations_page
+        )
+
+        blueprint.add_url_rule(
+            "/information",
+            "information",
+            information_page
+        )
+
+        blueprint.add_url_rule(
+            "/ovak-resource/<dataset_name>/<resource_id>",
+            "ovak_resource_page",
+            ovak_resource_page
+        )
+
+        return blueprint

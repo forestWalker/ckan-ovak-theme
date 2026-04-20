@@ -1,0 +1,2 @@
+[ckan.plugins]
+ovak_theme = ckanext.ovak_theme.plugin:OvakThemePlugin

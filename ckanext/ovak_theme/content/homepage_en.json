@@ -1,6 +1,6 @@
 {
   "municipality_name": "Municipality of Szeged",
-  "portal_title": "Szeged Municipality Dataportal",
+  "portal_title": "Szeged Municipal Data Portal",
   "nav": {
     "datasets": "Datasets",
     "visualizations": "Visualizations",
@@ -9,10 +9,22 @@
   "search_placeholder": "Search",
   "language_switch_label": "HU",
   "chips": [
-    "Traffic monitoring",
-    "Public transport",
-    "Air pollution",
-    "Bio particle"
+    {
+      "label": "Traffic monitoring",
+      "icon": "/base/images/icons/traffic.svg"
+    },
+    {
+      "label": "Public transport",
+      "icon": "/base/images/icons/public-transport.svg"
+    },
+    {
+      "label": "Air pollution",
+      "icon": "/base/images/icons/air-quality.svg"
+    },
+    {
+      "label": "Biological particles",
+      "icon": "/base/images/icons/bio-particle.svg"
+    }
   ],
   "summary": {
     "title": "Project summary",
@@ -20,9 +32,128 @@
   },
   "news": {
     "title": "News title",
-    "date": "2026-03-19",
+    "date": "Date",
     "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident."
   },
+  "dataset_page": {
+    "title": "Datasets",
+    "intro": "Browse, search and explore the available public datasets.",
+    "filters_title": "Filters",
+    "results_found_suffix": "datasets found",
+    "order_by": "Order by",
+    "no_results": "No datasets found",
+    "search_placeholder": "Search datasets...",
+    "facet_titles": {
+      "organization": "Organizations",
+      "groups": "Groups",
+      "tags": "Tags",
+      "res_format": "Formats",
+      "license_id": "Licenses"
+    }
+  },
+  "resource_page": {
+    "breadcrumbs": {
+      "home": "Home",
+      "datasets": "Datasets"
+    },
+    "views": {
+      "table": "Table",
+      "chart": "Chart",
+      "fullscreen": "Fullscreen",
+      "embed": "Embed"
+    },
+    "empty_description": "There is no description for this resource."
+  },
+  "dataset_detail_page": {
+    "breadcrumbs": {
+      "home": "Home",
+      "datasets": "Datasets"
+    },
+    "resources_title": "Data",
+    "tags_title": "Tags",
+    "additional_info_title": "Additional information",
+    "fields": {
+      "source": "Source",
+      "author": "Author",
+      "maintainer": "Maintainer",
+      "version": "Version",
+      "state": "State",
+      "last_updated": "Last updated",
+      "created": "Created",
+      "field": "Field",
+      "value": "Value"
+    },
+    "empty": {
+      "description": "There is no description for this dataset.",
+      "resources": "This dataset has no data.",
+      "tags": "There are no tags."
+    }
+  },
+  "information_page": {
+  "breadcrumbs": {
+    "home": "Home"
+  },
+  "image_alt": "Downtown Szeged with Dóm Square",
+  "lead": "The Szeged–Timișoara Data Space (STiDS) project is an innovative cross-border initiative aimed at creating an interoperable, scalable, and secure urban data-sharing ecosystem.",
+  "sections": [
+    {
+      "title": "Szeged–Timișoara Data Space (STiDS)",
+      "paragraphs": [
+        "The Szeged–Timișoara Data Space (STiDS) project is an innovative, cross-border initiative aimed at creating an interoperable, scalable, and secure urban data-sharing ecosystem. The project is based on the cooperation between Szeged (Hungary) and Timișoara (Romania), and seeks to contribute to the development of smarter, more sustainable, and more livable urban environments through the tools of digital transformation.",
+        "The initiative is closely aligned with the European Union’s Data Space for Smart Communities (DS4SSCC) programme, which aims to establish unified, standardized, and interoperable data-sharing frameworks for European cities. Accordingly, the project is not only a technological development, but also a validation pilot that actively contributes to the evolution of the European data market and data economy."
+      ]
+    },
+    {
+      "title": "Shared vision: data-driven urban development",
+      "paragraphs": [
+        "The cooperation between Szeged and Timișoara creates a unique opportunity for two Central and Eastern European cities facing similar social and economic challenges to jointly develop and test data-driven solutions. The project is based on existing urban data platforms – OVAK in Szeged and a CKAN-based data platform in Timișoara – which will be further developed into a unified, federated data-sharing space.",
+        "The objective of the project is for these infrastructures to move beyond their current isolated operation and function as an interoperable system capable of real-time data exchange. This enables the integrated management and optimization of various urban systems, including transport, environmental protection, and healthcare."
+      ]
+    },
+    {
+      "title": "Focus areas: integrated management of mobility and air quality",
+      "paragraphs": [
+        "The STiDS project focuses on two closely interconnected urban challenges: optimizing urban mobility and improving air quality. One of the fundamental objectives of the project is not to treat these two areas as separate problems, but to examine and develop them within an integrated, data-driven system in both Szeged and Timișoara.",
+        "In both cities, ensuring the efficiency of transport systems represents a significant challenge, particularly due to the impacts of increasing urban traffic, commuting, and tourism. Within the framework of the project, the integration of transport data and IoT-based sensor data enables real-time analysis of traffic patterns, the reduction of congestion, and the optimization of public transport.",
+        "At the same time, improving air quality and reducing environmental impact are key priorities for both cities. Through the deployment and expansion of sensor networks within the project, detailed, real-time environmental data becomes available, supporting the identification of pollution sources as well as targeted, data-driven interventions.",
+        "The two domains are closely interconnected: mobility patterns have a direct impact on air quality. One of the most important innovations of the STiDS project is precisely the identification and utilization of these interconnections. The integrated data platform makes it possible for mobility-optimized transport strategies to also contribute to reducing environmental impact, thereby enabling complex, system-level urban development decisions."
+      ]
+    },
+    {
+      "title": "Technological approach and data architecture",
+      "paragraphs": [
+        "The project is built on state-of-the-art open standards and technologies, with particular focus on the FIWARE ecosystem and the NGSI-LD data model.",
+        "During the transformation of existing systems, special emphasis is placed on interoperable data models, real-time data processing and context management, federated data catalogues, secure access management, and geospatial data integration.",
+        "The goal is to create a data platform that not only enables data exchange between the two cities, but also provides a scalable and integrable solution for other European cities in the long term."
+      ]
+    },
+    {
+      "title": "European alignment and impact",
+      "paragraphs": [
+        "The STiDS project is closely aligned with the objectives of the European Green Deal and the Digital Europe Programme. The project contributes to the development of sustainable mobility, the achievement of “zero pollution” goals, the digitalization of urban services, as well as the strengthening of the European data economy.",
+        "In addition, the project plays an active role in validating the DS4SSCC Blueprint, which forms the basis for the future standardization of urban data platforms in Europe."
+      ]
+    },
+    {
+      "title": "Multi-stakeholder collaboration",
+      "paragraphs": [
+        "The STiDS project is implemented within the framework of close cross-border cooperation, building on the twin-city relationship between Szeged and Timișoara. This partnership is rooted not only in historical and cultural foundations, but also plays an increasingly important role in joint digital and sustainability developments.",
+        "The lead partner of the project is the Municipality of Szeged, while the Romanian pilot site is represented by the Municipality of Timișoara. The two cities provide strategic direction, as well as the availability of local data platforms and urban datasets.",
+        "A key role in providing transport and mobility data is played by the Szeged Transport Company (SZKT) and the Timișoara Public Transport Company (STPT), which actively participate in the data-driven development and optimization of urban transport systems.",
+        "The technological implementation and development of data platforms are supported by several industrial and IT partners, including RITEK Zrt., GriffSoft Zrt., and Frontier Penta. The Polytechnic University of Timișoara (Universitatea Politehnica Timișoara, UPT) also participates in the project, contributing to research, validation, and innovation activities.",
+        "The technology lead and consortium coordinator of the project is Clarity Consulting, which is responsible for project management, quality assurance, as well as the development of data platform and AI solutions. International cooperation and knowledge transfer are supported by Rockwood Digital Europe.",
+        "This partnership structure ensures that the project builds simultaneously on local municipal experience and international technological expertise, while facilitating the practical implementation of cross-border data sharing and its long-term sustainability."
+      ]
+    },
+    {
+      "title": "Expected results and long-term impact",
+      "paragraphs": [
+        "As a result of the STiDS project, the efficiency and sustainability of urban transport will improve, air pollution will decrease, data-driven decision-making will be strengthened, and public trust in digital public services will increase.",
+        "In the long term, the project provides a replicable model for other European cities, particularly in the Central and Eastern European region, contributing to the development of a unified European data market."
+      ]
+    }
+  ]
+},
   "footer": {
     "links": [
       { "label": "Link", "url": "#" },

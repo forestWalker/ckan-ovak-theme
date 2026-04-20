@@ -1,0 +1,51 @@
+{% extends "_layout.html" %}
+
+{% set lang = h.ovak_get_current_lang() %}
+{% if lang == 'hu' %}
+  {% set content = h.ovak_read_json_file('homepage_hu.json') %}
+  {% set page_title = 'Információ' %}
+{% else %}
+  {% set content = h.ovak_read_json_file('homepage_en.json') %}
+  {% set page_title = 'Information' %}
+{% endif %}
+
+{% set info_page = content.information_page %}
+
+{% block content %}
+<section class="ovak-information-page">
+
+  <nav class="ovak-breadcrumbs" aria-label="Breadcrumb">
+    <a href="/">{{ info_page.breadcrumbs.home }}</a>
+    <span class="ovak-breadcrumbs__sep">›</span>
+    <span>{{ page_title }}</span>
+  </nav>
+
+  <header class="ovak-information-hero">
+    <div class="ovak-information-hero__image-wrap">
+      <img
+        src="/base/images/szeged.jpg"
+        alt="{{ info_page.image_alt }}"
+        class="ovak-information-hero__image">
+    </div>
+  </header>
+
+  <section class="ovak-information-article">
+    <h1>{{ page_title }}</h1>
+
+    <p class="ovak-information-article__lead">
+      {{ info_page.lead }}
+    </p>
+
+    {% for section in info_page.sections %}
+      <section class="ovak-information-section">
+        <h2>{{ section.title }}</h2>
+
+        {% for paragraph in section.paragraphs %}
+          <p>{{ paragraph }}</p>
+        {% endfor %}
+      </section>
+    {% endfor %}
+  </section>
+
+</section>
+{% endblock %}

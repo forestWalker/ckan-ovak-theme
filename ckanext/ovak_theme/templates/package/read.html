@@ -1,0 +1,42 @@
+{% extends "_layout.html" %}
+
+{% set lang = h.ovak_get_current_lang() %}
+{% if lang == 'hu' %}
+  {% set content = h.ovak_read_json_file('homepage_hu.json') %}
+{% else %}
+  {% set content = h.ovak_read_json_file('homepage_en.json') %}
+{% endif %}
+
+{% set detail = content.dataset_detail_page %}
+{% set dataset_title = h.dataset_display_name(pkg) %}
+{% set dataset_notes = h.get_translated(pkg, 'notes') if pkg.notes else '' %}
+
+{% block page_class %} ovak-dataset-detail-page{% endblock %}
+
+{% block content %}
+  <nav class="ovak-breadcrumbs" aria-label="Breadcrumb">
+    <a href="/">{{ detail.breadcrumbs.home }}</a>
+    <span class="ovak-breadcrumbs__sep">›</span>
+    <a href="{{ h.url_for('dataset.search') }}">{{ detail.breadcrumbs.datasets }}</a>
+    <span class="ovak-breadcrumbs__sep">›</span>
+    <span>{{ dataset_title }}</span>
+  </nav>
+
+  <section class="ovak-dataset-detail-hero">
+    <h1>{{ dataset_title }}</h1>
+
+    {% if dataset_notes %}
+      <div class="ovak-dataset-detail-description">
+        {{ h.render_markdown(dataset_notes) }}
+      </div>
+    {% else %}
+      <p class="ovak-dataset-detail-description ovak-dataset-detail-description--empty">
+        {{ detail.empty.description }}
+      </p>
+    {% endif %}
+  </section>
+
+  {% snippet "package/snippets/resources_list.html", pkg=pkg, resources=pkg.resources %}
+  {% snippet "package/snippets/tags.html", tags=pkg.tags %}
+  {% snippet "package/snippets/additional_info.html", pkg_dict=pkg %}
+{% endblock %}

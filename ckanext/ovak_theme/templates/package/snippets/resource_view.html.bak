@@ -1,0 +1,129 @@
+{% extends "page.html" %}
+
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="/base/css/custom.css">
+{% endblock %}
+
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% set lang = h.ovak_get_current_lang() %}
+
+{% if lang == 'hu' %}
+  {% set content = h.ovak_read_json_file('homepage_hu.json') %}
+{% else %}
+  {% set content = h.ovak_read_json_file('homepage_en.json') %}
+{% endif %}
+
+{% set resource_page = content.resource_page %}
+{% set dataset_title = h.dataset_display_name(package) %}
+{% set resource_title = h.resource_display_name(resource) %}
+{% set resource_description = h.get_translated(resource, 'description') if resource.description else '' %}
+
+{% block page %}
+<section class="ovak-homepage ovak-resource-page">
+  <header class="ovak-topbar">
+    <div class="ovak-topbar__inner">
+      <a class="ovak-brand ovak-brand--link" href="/">
+        <img src="/base/images/icons/header-logo.svg" alt="Szegedi Önkormányzat logó" class="ovak-brand__logo">
+        <div class="ovak-brand__text">{{ content.municipality_name }}</div>
+      </a>
+
+      <nav class="ovak-nav" aria-label="Main navigation">
+        <a href="/dataset">{{ content.nav.datasets }}</a>
+        <a href="{{ h.url_for('ovak_theme.visualizations') }}">{{ content.nav.visualizations }}</a>
+        <a href="#">{{ content.nav.information }}</a>
+      </nav>
+
+      <div class="ovak-search" role="search">
+        <span class="ovak-search__icon">⌕</span>
+        <input
+          type="text"
+          placeholder="{{ content.search_placeholder }}"
+          aria-label="{{ content.search_placeholder }}"
+          onkeydown="if(event.key==='Enter'){window.location='/dataset?q='+encodeURIComponent(this.value);}"
+        >
+      </div>
+
+      <div class="ovak-lang">
+        <a href="#" class="ovak-lang-toggle" data-target-lang="{{ 'hu' if lang == 'en' else 'en' }}">
+          {{ content.language_switch_label }}
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="ovak-container">
+    <nav class="ovak-breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">{{ resource_page.breadcrumbs.home }}</a>
+      <span class="ovak-breadcrumbs__sep">›</span>
+      <a href="/dataset">{{ resource_page.breadcrumbs.datasets }}</a>
+      <span class="ovak-breadcrumbs__sep">›</span>
+      <a href="{{ h.url_for(package.type ~ '.read', id=package.name) }}">{{ dataset_title }}</a>
+      <span class="ovak-breadcrumbs__sep">›</span>
+      <span>{{ resource_title }}</span>
+    </nav>
+
+    <section class="ovak-resource-hero">
+      <h1>{{ dataset_title }}</h1>
+
+      {% if resource_description %}
+        <div class="ovak-resource-description">
+          {{ h.render_markdown(resource_description) }}
+        </div>
+      {% else %}
+        <p class="ovak-resource-description ovak-resource-description--empty">
+          {{ resource_page.empty_description }}
+        </p>
+      {% endif %}
+    </section>
+
+    <div class="ovak-resource-preview-shell">
+      {% snippet 'package/snippets/resource_view.html', resource=resource, package=package %}
+    </div>
+  </main>
+
+  <footer class="ovak-footer">
+    <div class="ovak-footer__inner">
+      <div class="ovak-footer__brand">
+        <img src="/base/images/icons/header-logo.svg" alt="Szegedi Önkormányzat logó" class="ovak-brand__logo ovak-brand__logo--small">
+        <span>{{ content.municipality_name }}</span>
+      </div>
+
+      <div class="ovak-footer__links">
+        <a href="https://data.primariatm.ro/" target="_blank" rel="noopener noreferrer">
+          Timisoara dataportal
+        </a>
+
+        <a href="#">
+          <img src="/base/images/icons/linkedin.svg" alt="LinkedIn" class="ovak-footer__icon">
+        </a>
+      </div>
+    </div>
+  </footer>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  document.cookie = 'ovak_lang={{ lang }}; path=/; max-age=31536000; SameSite=Lax';
+
+  const currentUrl = new URL(window.location.href);
+  if (currentUrl.searchParams.has('lang')) {
+    currentUrl.searchParams.delete('lang');
+    const cleanUrl = currentUrl.pathname + (currentUrl.search ? currentUrl.search : '') + currentUrl.hash;
+    window.history.replaceState({}, '', cleanUrl);
+  }
+
+  const langToggle = document.querySelector('.ovak-lang-toggle');
+  if (langToggle) {
+    langToggle.addEventListener('click', function (e) {
+      e.preventDefault();
+      const targetLang = this.getAttribute('data-target-lang');
+      document.cookie = 'ovak_lang=' + targetLang + '; path=/; max-age=31536000; SameSite=Lax';
+      window.location.reload();
+    });
+  }
+});
+</script>
+{% endblock %}

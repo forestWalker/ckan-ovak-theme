@@ -1,0 +1,20 @@
+{% set lang = h.ovak_get_current_lang() %}
+{% if lang == 'hu' %}
+  {% set content = h.ovak_read_json_file('homepage_hu.json') %}
+{% else %}
+  {% set content = h.ovak_read_json_file('homepage_en.json') %}
+{% endif %}
+
+{% set detail = content.dataset_detail_page %}
+
+<section class="ovak-detail-section ovak-detail-section--tags">
+  {% if tags %}
+    <div class="ovak-detail-tags">
+      {% for tag in tags %}
+        <span class="ovak-detail-tag">{{ tag.display_name or tag.name }}</span>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="ovak-detail-empty">{{ detail.empty.tags }}</p>
+  {% endif %}
+</section>

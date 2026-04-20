@@ -1,0 +1,65 @@
+{% extends "_layout.html" %}
+
+{% set lang = h.ovak_get_current_lang() %}
+{% if lang == 'hu' %}
+  {% set content = h.ovak_read_json_file('homepage_hu.json') %}
+  {% set page_title = 'Vizualizációk' %}
+{% else %}
+  {% set content = h.ovak_read_json_file('homepage_en.json') %}
+  {% set page_title = 'Visualizations' %}
+{% endif %}
+
+{% block content %}
+  <section class="ovak-visualizations-page">
+    <nav class="ovak-breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      <span class="ovak-breadcrumbs__sep">›</span>
+      <span>{{ page_title }}</span>
+    </nav>
+
+    <header class="ovak-visualizations-hero">
+      <h1>{{ page_title }}</h1>
+    </header>
+
+    <nav class="ovak-visualizations-chip-row" aria-label="{{ page_title }}">
+      {% for chip in content.chips %}
+        <button
+          type="button"
+          class="ovak-visualizations-chip{% if loop.first %} is-active{% endif %}"
+          data-ovak-viz-chip="{% if chip is mapping %}{{ chip.label|lower|replace(' ', '-') }}{% else %}{{ chip|lower|replace(' ', '-') }}{% endif %}"
+        >
+          {% if chip is mapping and chip.icon %}
+            <span class="ovak-visualizations-chip__icon" aria-hidden="true">
+              <img src="{{ chip.icon }}" alt="">
+            </span>
+          {% endif %}
+          <span class="ovak-visualizations-chip__label">
+            {% if chip is mapping %}
+              {{ chip.label }}
+            {% else %}
+              {{ chip }}
+            {% endif %}
+          </span>
+        </button>
+      {% endfor %}
+    </nav>
+
+    <section class="ovak-visualizations-section">
+      <h2>{{ content.summary.title }}</h2>
+      <p>{{ content.summary.body }}</p>
+    </section>
+
+    <!-- 🔽 IDE KERÜLT AZ IFRAME -->
+    <section class="ovak-visualizations-embed-section">
+      <div class="ovak-visualizations-embed-placeholder" id="ovak-visualizations-embed">
+        <iframe
+          src="https://www.youtube.com/embed/LEUogEWiFEc"
+          width="100%"
+          height="100%"
+          frameborder="0"
+          allowfullscreen>
+        </iframe>
+      </div>
+    </section>
+  </section>
+{% endblock %}
