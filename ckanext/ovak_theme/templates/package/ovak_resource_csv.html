@@ -130,8 +130,22 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      const lang = {{ ('hu' if lang == 'hu' else 'en') | tojson }};
-      const resourceId = {{ resource.id | tojson }};
+      const lang = {
+      {
+        ('hu'
+        if lang == 'hu' else
+        'en'
+      ) |
+        tojson
+      }
+    }
+      ;
+      const resourceId = {
+      {
+        resource.id | tojson
+      }
+    }
+      ;
       const datastoreUrl = '/api/3/action/datastore_search?resource_id=' + encodeURIComponent(resourceId) + '&limit=100';
 
       const tableState = document.getElementById('ovak-table-state');
@@ -173,24 +187,24 @@
         const start = (currentPage - 1) * recordsPerPage + 1;
         const end = Math.min(currentPage * recordsPerPage, filteredRecords.length);
         const total = filteredRecords.length;
-        
+
         tableInfo.textContent = t(
-          `Találatok: ${start}-${end} / ${total}`,
-          `Results: ${start}-${end} / ${total}`
+                `Találatok: ${start}-${end} / ${total}`,
+                `Results: ${start}-${end} / ${total}`
         );
       }
 
       function updatePagination() {
         const totalPages = Math.ceil(filteredRecords.length / recordsPerPage);
-        
+
         pageInfo.textContent = t(
-          `${currentPage} / ${totalPages}`,
-          `${currentPage} / ${totalPages}`
+                `${currentPage} / ${totalPages}`,
+                `${currentPage} / ${totalPages}`
         );
-        
+
         prevBtn.disabled = currentPage === 1;
         nextBtn.disabled = currentPage === totalPages || totalPages === 0;
-        
+
         pagination.hidden = totalPages <= 1;
       }
 
@@ -198,16 +212,16 @@
         return [...records].sort((a, b) => {
           const aVal = a[field] ?? '';
           const bVal = b[field] ?? '';
-          
+
           if (isNumericValue(aVal) && isNumericValue(bVal)) {
-            return direction === 'asc' 
-              ? toNumber(aVal) - toNumber(bVal)
-              : toNumber(bVal) - toNumber(aVal);
+            return direction === 'asc'
+                    ? toNumber(aVal) - toNumber(bVal)
+                    : toNumber(bVal) - toNumber(aVal);
           }
-          
+
           return direction === 'asc'
-            ? String(aVal).localeCompare(String(bVal))
-            : String(bVal).localeCompare(String(aVal));
+                  ? String(aVal).localeCompare(String(bVal))
+                  : String(bVal).localeCompare(String(aVal));
         });
       }
 
@@ -216,17 +230,17 @@
           filteredRecords = [...allRecords];
         } else {
           const query = searchQuery.toLowerCase();
-          filteredRecords = allRecords.filter(record => 
-            Object.values(record).some(value => 
-              String(value ?? '').toLowerCase().includes(query)
-            )
+          filteredRecords = allRecords.filter(record =>
+                  Object.values(record).some(value =>
+                          String(value ?? '').toLowerCase().includes(query)
+                  )
           );
         }
-        
+
         if (sortField) {
           filteredRecords = sortRecords(filteredRecords, sortField, sortDirection);
         }
-        
+
         currentPage = 1;
         updateTableInfo();
         updatePagination();
@@ -238,11 +252,11 @@
 
       function escapeHtml(value) {
         return String(value ?? '')
-          .replaceAll('&', '&amp;')
-          .replaceAll('<', '&lt;')
-          .replaceAll('>', '&gt;')
-          .replaceAll('"', '&quot;')
-          .replaceAll("'", '&#039;');
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#039;');
       }
 
       function isNumericValue(value) {
@@ -280,7 +294,7 @@
 
         // Add click handlers for sorting
         document.querySelectorAll('.sortable-header').forEach(header => {
-          header.addEventListener('click', function() {
+          header.addEventListener('click', function () {
             const field = this.getAttribute('data-field');
             if (sortField === field) {
               sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
@@ -303,5 +317,6 @@
       function buildTable(fields, records) {
         buildTableWithPagination(fields, records);
       }
+    })
   </script>
 {% endblock %}
