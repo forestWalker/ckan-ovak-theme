@@ -90,7 +90,6 @@
           <span id="ovak-page-info"></span>
           <button type="button" id="ovak-next-page" class="ovak-pagination-btn">{{ 'K00f6vetkez0151' if lang == 'hu' else 'Next' }}</button>
         </div>
-        </div>
       </div>
     </div>
 
@@ -197,8 +196,8 @@
 
       function sortRecords(records, field, direction) {
         return [...records].sort((a, b) => {
-          const aVal = a[field] ?? ';
-          const bVal = b[field] ?? ';
+          const aVal = a[field] ?? '';
+          const bVal = b[field] ?? '';
           
           if (isNumericValue(aVal) && isNumericValue(bVal)) {
             return direction === 'asc' 
@@ -219,7 +218,7 @@
           const query = searchQuery.toLowerCase();
           filteredRecords = allRecords.filter(record => 
             Object.values(record).some(value => 
-              String(value ?? ').toLowerCase().includes(query)
+              String(value ?? '').toLowerCase().includes(query)
             )
           );
         }
@@ -269,15 +268,15 @@
                   ${sortField === field ? (sortDirection === 'asc' ? ' &#9650;' : ' &#9660;') : ''}
                 </span>
               </th>
-            `).join(')}
+            `).join('\n')}
           </tr>
         `;
 
         tbody.innerHTML = pageRecords.map(row => `
           <tr>
-            ${fields.map(field => `<td>${escapeHtml(row[field])}</td>`).join(')}
+            ${fields.map(field => `<td>${escapeHtml(row[field])}</td>`).join('\n')}
           </tr>
-        `).join(');
+        `).join('\n');
 
         // Add click handlers for sorting
         document.querySelectorAll('.sortable-header').forEach(header => {
