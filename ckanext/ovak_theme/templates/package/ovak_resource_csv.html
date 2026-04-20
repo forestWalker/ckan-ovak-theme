@@ -68,6 +68,14 @@
   <section class="ovak-resource-view-body">
     <div class="ovak-resource-panel is-active" data-ovak-panel="table">
       <div class="ovak-table-card">
+        <div class="ovak-table-controls">
+          <div class="ovak-table-search">
+            <input type="text" id="ovak-table-search" placeholder="{{ 'Keresés...' if lang == 'hu' else 'Search...' }}" class="ovak-search-input">
+          </div>
+          <div class="ovak-table-info">
+            <span id="ovak-table-info">{{ 'Betöltés...' if lang == 'hu' else 'Loading...' }}</span>
+          </div>
+        </div>
         <div class="ovak-table-state" id="ovak-table-state">
           {{ 'Betöltés...' if lang == 'hu' else 'Loading...' }}
         </div>
@@ -76,6 +84,12 @@
             <thead id="ovak-data-thead"></thead>
             <tbody id="ovak-data-tbody"></tbody>
           </table>
+        </div>
+        <div class="ovak-table-pagination" id="ovak-table-pagination" hidden>
+          <button type="button" id="ovak-prev-page" class="ovak-pagination-btn">{{ 'El0151z0151' if lang == 'hu' else 'Previous' }}</button>
+          <span id="ovak-page-info"></span>
+          <button type="button" id="ovak-next-page" class="ovak-pagination-btn">{{ 'K00f6vetkez0151' if lang == 'hu' else 'Next' }}</button>
+        </div>
         </div>
       </div>
     </div>
@@ -138,6 +152,87 @@
       let lineChart = null;
       let pieChart = null;
 
+      // Table interactivity variables
+      let allRecords = [];
+      let filteredRecords = [];
+      let currentPage = 1;
+      let recordsPerPage = 25;
+      let sortField = null;
+      let sortDirection = 'asc';
+      let searchQuery = '';
+
+      // Table control elements
+      const searchInput = document.getElementById('ovak-table-search') || document.createElement('input');
+      const tableInfo = document.getElementById('ovak-table-info') || document.createElement('span');
+      const pagination = document.getElementById('ovak-table-pagination') || document.createElement('div');
+      const pageInfo = document.getElementById('ovak-page-info') || document.createElement('span');
+      const prevBtn = document.getElementById('ovak-prev-page') || document.createElement('button');
+      const nextBtn = document.getElementById('ovak-next-page') || document.createElement('button');
+
+
+      function updateTableInfo() {
+        const start = (currentPage - 1) * recordsPerPage + 1;
+        const end = Math.min(currentPage * recordsPerPage, filteredRecords.length);
+        const total = filteredRecords.length;
+        
+        tableInfo.textContent = t(
+          `Találatok: ${start}-${end} / ${total}`,
+          `Results: ${start}-${end} / ${total}`
+        );
+      }
+
+      function updatePagination() {
+        const totalPages = Math.ceil(filteredRecords.length / recordsPerPage);
+        
+        pageInfo.textContent = t(
+          `${currentPage} / ${totalPages}`,
+          `${currentPage} / ${totalPages}`
+        );
+        
+        prevBtn.disabled = currentPage === 1;
+        nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+        
+        pagination.hidden = totalPages <= 1;
+      }
+
+      function sortRecords(records, field, direction) {
+        return [...records].sort((a, b) => {
+          const aVal = a[field] ?? ';
+          const bVal = b[field] ?? ';
+          
+          if (isNumericValue(aVal) && isNumericValue(bVal)) {
+            return direction === 'asc' 
+              ? toNumber(aVal) - toNumber(bVal)
+              : toNumber(bVal) - toNumber(aVal);
+          }
+          
+          return direction === 'asc'
+            ? String(aVal).localeCompare(String(bVal))
+            : String(bVal).localeCompare(String(aVal));
+        });
+      }
+
+      function filterRecords() {
+        if (!searchQuery) {
+          filteredRecords = [...allRecords];
+        } else {
+          const query = searchQuery.toLowerCase();
+          filteredRecords = allRecords.filter(record => 
+            Object.values(record).some(value => 
+              String(value ?? ').toLowerCase().includes(query)
+            )
+          );
+        }
+        
+        if (sortField) {
+          filteredRecords = sortRecords(filteredRecords, sortField, sortDirection);
+        }
+        
+        currentPage = 1;
+        updateTableInfo();
+        updatePagination();
+      }
+
       function t(hu, en) {
         return lang === 'hu' ? hu : en;
       }
@@ -160,214 +255,52 @@
         return Number(String(value).replace(',', '.'));
       }
 
-      function buildTable(fields, records) {
+      function buildTableWithPagination(fields, records) {
+        const start = (currentPage - 1) * recordsPerPage;
+        const end = start + recordsPerPage;
+        const pageRecords = records.slice(start, end);
+
         thead.innerHTML = `
           <tr>
-            ${fields.map(field => `<th>${escapeHtml(field)}</th>`).join('')}
+            ${fields.map(field => `
+              <th class="sortable-header" data-field="${field}">
+                ${escapeHtml(field)}
+                <span class="sort-indicator" data-field="${field}">
+                  ${sortField === field ? (sortDirection === 'asc' ? ' &#9650;' : ' &#9660;') : ''}
+                </span>
+              </th>
+            `).join(')}
           </tr>
         `;
 
-        tbody.innerHTML = records.map(row => `
+        tbody.innerHTML = pageRecords.map(row => `
           <tr>
-            ${fields.map(field => `<td>${escapeHtml(row[field])}</td>`).join('')}
+            ${fields.map(field => `<td>${escapeHtml(row[field])}</td>`).join(')}
           </tr>
-        `).join('');
+        `).join(');
+
+        // Add click handlers for sorting
+        document.querySelectorAll('.sortable-header').forEach(header => {
+          header.addEventListener('click', function() {
+            const field = this.getAttribute('data-field');
+            if (sortField === field) {
+              sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+              sortField = field;
+              sortDirection = 'asc';
+            }
+            filterRecords();
+            buildTableWithPagination(fields, filteredRecords);
+          });
+        });
 
         tableState.hidden = true;
         tableScroll.hidden = false;
+        pagination.hidden = false;
+        updateTableInfo();
+        updatePagination();
       }
 
-      function findBestDimensions(records, fields) {
-        const numericFields = fields.filter(field =>
-          records.some(row => isNumericValue(row[field]))
-        );
-
-        const labelFields = fields.filter(field => !numericFields.includes(field));
-
-        return {
-          labelField: labelFields[0] || fields[0] || null,
-          numericField: numericFields[0] || null
-        };
+      function buildTable(fields, records) {
+        buildTableWithPagination(fields, records);
       }
-
-      function buildBarChart(records, labelField, numericField) {
-        if (!labelField || !numericField) {
-          barState.textContent = t('Nincs elég adat oszlopdiagramhoz.', 'Not enough data for bar chart.');
-          return;
-        }
-
-        const rows = records.filter(row => isNumericValue(row[numericField])).slice(0, 20);
-        if (!rows.length) {
-          barState.textContent = t('Nincs numerikus adat.', 'No numeric data.');
-          return;
-        }
-
-        const labels = rows.map(row => String(row[labelField] ?? ''));
-        const values = rows.map(row => toNumber(row[numericField]));
-
-        barCanvas.hidden = false;
-        barState.hidden = true;
-
-        if (barChart) {
-          barChart.destroy();
-        }
-
-        barChart = new Chart(barCanvas.getContext('2d'), {
-          type: 'bar',
-          data: {
-            labels,
-            datasets: [{
-              label: numericField,
-              data: values
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false
-          }
-        });
-      }
-
-      function buildLineChart(records, labelField, numericField) {
-        if (!labelField || !numericField) {
-          lineState.textContent = t('Nincs elég adat vonaldiagramhoz.', 'Not enough data for line chart.');
-          return;
-        }
-
-        const rows = records.filter(row => isNumericValue(row[numericField])).slice(0, 30);
-        if (!rows.length) {
-          lineState.textContent = t('Nincs numerikus adat.', 'No numeric data.');
-          return;
-        }
-
-        const labels = rows.map(row => String(row[labelField] ?? ''));
-        const values = rows.map(row => toNumber(row[numericField]));
-
-        lineCanvas.hidden = false;
-        lineState.hidden = true;
-
-        if (lineChart) {
-          lineChart.destroy();
-        }
-
-        lineChart = new Chart(lineCanvas.getContext('2d'), {
-          type: 'line',
-          data: {
-            labels,
-            datasets: [{
-              label: numericField,
-              data: values
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false
-          }
-        });
-      }
-
-      function buildPieChart(records, labelField, numericField) {
-        if (!labelField || !numericField) {
-          pieState.textContent = t('Nincs elég adat kördiagramhoz.', 'Not enough data for pie chart.');
-          return;
-        }
-
-        const grouped = new Map();
-        records.forEach(row => {
-          const label = String(row[labelField] ?? t('Ismeretlen', 'Unknown'));
-          const value = isNumericValue(row[numericField]) ? toNumber(row[numericField]) : 0;
-          grouped.set(label, (grouped.get(label) || 0) + value);
-        });
-
-        const labels = Array.from(grouped.keys()).slice(0, 8);
-        const values = Array.from(grouped.values()).slice(0, 8);
-
-        if (!labels.length) {
-          pieState.textContent = t('Nincs adat kördiagramhoz.', 'No data for pie chart.');
-          return;
-        }
-
-        pieCanvas.hidden = false;
-        pieState.hidden = true;
-
-        if (pieChart) {
-          pieChart.destroy();
-        }
-
-        pieChart = new Chart(pieCanvas.getContext('2d'), {
-          type: 'pie',
-          data: {
-            labels,
-            datasets: [{
-              data: values
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false
-          }
-        });
-      }
-
-      function activateTab(tabName) {
-        document.querySelectorAll('[data-ovak-tab]').forEach(btn => {
-          btn.classList.toggle('is-active', btn.getAttribute('data-ovak-tab') === tabName);
-        });
-
-        document.querySelectorAll('[data-ovak-panel]').forEach(panel => {
-          panel.classList.toggle('is-active', panel.getAttribute('data-ovak-panel') === tabName);
-        });
-      }
-
-      document.querySelectorAll('[data-ovak-tab]').forEach(btn => {
-        btn.addEventListener('click', function () {
-          activateTab(this.getAttribute('data-ovak-tab'));
-        });
-      });
-
-      fetch(datastoreUrl)
-        .then(response => response.json())
-        .then(data => {
-          if (!data.success || !data.result || !data.result.records) {
-            throw new Error('Invalid datastore response');
-          }
-
-          const fields = (data.result.fields || [])
-            .map(field => field.id)
-            .filter(id => id !== '_id');
-
-          const records = (data.result.records || []).map(record => {
-            const cleaned = {};
-            fields.forEach(field => {
-              cleaned[field] = record[field];
-            });
-            return cleaned;
-          });
-
-          if (!fields.length || !records.length) {
-            tableState.textContent = t('Nincs megjeleníthető adat.', 'No data available.');
-            barState.textContent = t('Nincs megjeleníthető adat.', 'No data available.');
-            lineState.textContent = t('Nincs megjeleníthető adat.', 'No data available.');
-            pieState.textContent = t('Nincs megjeleníthető adat.', 'No data available.');
-            return;
-          }
-
-          buildTable(fields, records.slice(0, 50));
-
-          const dims = findBestDimensions(records, fields);
-          buildBarChart(records, dims.labelField, dims.numericField);
-          buildLineChart(records, dims.labelField, dims.numericField);
-          buildPieChart(records, dims.labelField, dims.numericField);
-        })
-        .catch(() => {
-          tableState.textContent = t(
-            'Nem sikerült betölteni az adatokat. Valószínűleg a resource még nincs Datastore-ba feldolgozva.',
-            'Could not load the data. The resource is probably not processed into Datastore yet.'
-          );
-          barState.textContent = t('A grafikon nem tölthető be.', 'The chart could not be loaded.');
-          lineState.textContent = t('A grafikon nem tölthető be.', 'The chart could not be loaded.');
-          pieState.textContent = t('A grafikon nem tölthető be.', 'The chart could not be loaded.');
-        });
-    });
-  </script>
-{% endblock %}
