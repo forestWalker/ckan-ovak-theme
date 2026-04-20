@@ -8,8 +8,8 @@
 {% endif %}
 
 {% set detail = content.dataset_detail_page %}
-{% set dataset_title = h.dataset_display_name(pkg) %}
-{% set dataset_notes = h.get_translated(pkg, 'notes') if pkg.notes else '' %}
+{% set dataset_title = h.dataset_display_name(pkg_dict) %}
+{% set dataset_notes = h.get_translated(pkg_dict, 'notes') if pkg_dict.notes else '' %}
 
 {% block page_class %} ovak-dataset-detail-page{% endblock %}
 
@@ -36,7 +36,7 @@
     {% endif %}
   </section>
 
-  {% snippet "package/snippets/resources_list.html", pkg=pkg, resources=pkg.resources %}
-  {% snippet "package/snippets/tags.html", tags=pkg.tags %}
-  {% snippet "package/snippets/additional_info.html", pkg_dict=pkg %}
+  {% snippet "package/snippets/resources_list.html", pkg=pkg_dict, resources=pkg_dict.resources %}
+  {% snippet "package/snippets/tags.html", tags=pkg_dict.tags %}
+  {% snippet "package/snippets/additional_info.html", pkg_dict=pkg_dict %}
 {% endblock %}
