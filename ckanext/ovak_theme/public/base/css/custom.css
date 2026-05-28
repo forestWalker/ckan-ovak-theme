@@ -731,11 +731,22 @@ body {
 .ovak-table-card,
 .ovak-chart-card {
   width: 100%;
-  background: transparent;
+}
+
+.ovak-table-card {
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(173, 216, 255, 0.45);
+  overflow: hidden;
 }
 
 .ovak-chart-card {
-  min-height: 460px;
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(173, 216, 255, 0.45);
+  min-height: 560px;
 }
 
 .ovak-table-state,
@@ -743,6 +754,17 @@ body {
   font-size: 15px;
   line-height: 1.6;
   color: #374151;
+}
+
+.ovak-table-error {
+  margin-top: 4px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #9f1239;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .ovak-table-scroll {
@@ -812,65 +834,49 @@ body {
   background: transparent;
 }
 
-.ovak-chart-wrap {
-  width: 100%;
-  height: 420px;
-  position: relative;
-  padding-top: 8px;
+/* Plugin-based CKAN charts */
+
+.ovak-plugin-chart-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
 }
 
-#ovak-bar-chart,
-#ovak-line-chart,
-#ovak-pie-chart {
-  width: 100% !important;
-  height: 100% !important;
+.ovak-plugin-chart-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 3px 10px rgba(173, 216, 255, 0.35);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ovak-plugin-chart-button:hover,
+.ovak-plugin-chart-button:focus,
+.ovak-plugin-chart-button.is-active {
+  background: #dceaf6;
+  color: #111827;
+  outline: none;
+}
+
+.ovak-plugin-chart-panel {
+  display: none;
+}
+
+.ovak-plugin-chart-panel.is-active {
   display: block;
 }
 
-.ovak-chart-bars {
-  display: flex;
-  align-items: flex-end;
-  gap: 18px;
-  min-height: 360px;
-  padding: 24px 8px 8px;
-  border-bottom: 1px solid #8f8f8f;
-  overflow-x: auto;
-}
-
-.ovak-chart-bar-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 96px;
-  flex: 0 0 96px;
-}
-
-.ovak-chart-bar-value {
-  font-size: 13px;
-  line-height: 1.2;
-  color: #111827;
-  margin-bottom: 8px;
-  text-align: center;
-}
-
-.ovak-chart-bar {
-  width: 54px;
-  min-height: 8px;
-  border-radius: 8px 8px 0 0;
-  background: #dceaf6;
-  box-shadow: 0 4px 10px rgba(173, 216, 255, 0.35);
-}
-
-.ovak-chart-bar-label {
-  margin-top: 10px;
-  font-size: 13px;
-  line-height: 1.35;
-  color: #111827;
-  text-align: center;
-  word-break: break-word;
-}
-
-/* CKAN resource view overrides */
+/* CKAN resource view */
 
 .ovak-resource-preview-shell .resource-view,
 .ovak-resource-preview-shell .module,
@@ -925,6 +931,326 @@ body {
   min-height: 520px;
   border: 0;
   background: transparent;
+}
+
+/* DataTables styling */
+
+.dataTables_wrapper {
+  width: 100%;
+  color: #111827;
+  font-size: 14px;
+}
+
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter {
+  margin-bottom: 16px;
+}
+
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_paginate {
+  margin-top: 16px;
+}
+
+.dataTables_wrapper .dataTables_length label,
+.dataTables_wrapper .dataTables_filter label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #374151;
+  font-size: 14px;
+}
+
+.dataTables_wrapper .dataTables_length select {
+  min-width: 76px;
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #111827;
+  font-size: 14px;
+  outline: none;
+  box-shadow: none;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+  height: 38px;
+  min-width: 220px;
+  padding: 0 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #111827;
+  font-size: 14px;
+  outline: none;
+  margin-left: 0;
+  box-shadow: none;
+}
+
+.dataTables_wrapper .dataTables_filter input:focus,
+.dataTables_wrapper .dataTables_length select:focus,
+.ovak-column-filter:focus {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.25);
+}
+
+.dataTables_wrapper .dataTables_info {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.dataTables_wrapper .dataTables_paginate {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  min-width: 38px;
+  height: 38px;
+  padding: 0 14px !important;
+  border: none !important;
+  border-radius: 999px !important;
+  background: #ffffff !important;
+  color: #111827 !important;
+  box-shadow: 0 3px 10px rgba(173, 216, 255, 0.35);
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background: #dceaf6 !important;
+  color: #111827 !important;
+  border: none !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+  background: #dceaf6 !important;
+  color: #111827 !important;
+  font-weight: 700;
+  border: none !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+  opacity: 0.5;
+  cursor: default;
+  background: #ffffff !important;
+  color: #6b7280 !important;
+}
+
+table.ovak-data-table.dataTable {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  margin: 0 !important;
+}
+
+table.ovak-data-table.dataTable thead th,
+table.ovak-data-table.dataTable thead td {
+  background: #dceaf6 !important;
+  color: #111827 !important;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: left;
+  padding: 14px 16px !important;
+  border-bottom: 1px solid #cbd5e1 !important;
+  white-space: nowrap;
+}
+
+table.ovak-data-table.dataTable tbody td {
+  background: #ffffff;
+  color: #111827;
+  font-size: 14px;
+  line-height: 1.45;
+  padding: 14px 16px !important;
+  border-top: 1px solid #e5e7eb !important;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+table.ovak-data-table.dataTable tbody tr:hover td {
+  background: #f8fbff !important;
+}
+
+table.ovak-data-table.dataTable.no-footer {
+  border-bottom: 0 !important;
+}
+
+div.dataTables_scroll {
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid #dbe4ee;
+  background: #ffffff;
+}
+
+div.dataTables_scrollHead {
+  background: #dceaf6;
+  border-bottom: 1px solid #cbd5e1;
+}
+
+div.dataTables_scrollHead table.dataTable {
+  margin-bottom: 0 !important;
+}
+
+div.dataTables_scrollBody {
+  background: #ffffff;
+  border-bottom: 0 !important;
+}
+
+div.dataTables_scrollBody thead tr {
+  height: 0 !important;
+}
+
+div.dataTables_scrollBody thead th,
+div.dataTables_scrollBody thead td {
+  height: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  border-top: 0 !important;
+  border-bottom: 0 !important;
+  line-height: 0 !important;
+  font-size: 0 !important;
+}
+
+div.dataTables_scrollBody thead input,
+div.dataTables_scrollBody thead button,
+div.dataTables_scrollBody thead .ovak-column-filter {
+  display: none !important;
+}
+
+div.dataTables_scrollBody::-webkit-scrollbar,
+.ovak-table-scroll::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+
+div.dataTables_scrollBody::-webkit-scrollbar-track,
+.ovak-table-scroll::-webkit-scrollbar-track {
+  background: #eef2f7;
+  border-radius: 999px;
+}
+
+div.dataTables_scrollBody::-webkit-scrollbar-thumb,
+.ovak-table-scroll::-webkit-scrollbar-thumb {
+  background: #c7d7e6;
+  border-radius: 999px;
+}
+
+div.dataTables_scrollBody::-webkit-scrollbar-thumb:hover,
+.ovak-table-scroll::-webkit-scrollbar-thumb:hover {
+  background: #aebfd1;
+}
+
+.dataTables_wrapper .dataTables_processing {
+  border: 0;
+  border-radius: 18px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  background: #ffffff;
+  color: #111827;
+  padding: 14px 18px;
+}
+
+/* DataTables extra controls */
+
+.ovak-filter-row th {
+  padding: 8px !important;
+  background: #eef6fc !important;
+  border-bottom: 1px solid #d6e4f0 !important;
+}
+
+.ovak-column-filter {
+  width: 100%;
+  min-width: 110px;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #111827;
+  font-size: 13px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.dataTables_wrapper .dt-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.dataTables_wrapper .dt-button {
+  min-height: 38px;
+  padding: 0 16px !important;
+  border: none !important;
+  border-radius: 999px !important;
+  background: #ffffff !important;
+  color: #111827 !important;
+  box-shadow: 0 3px 10px rgba(173, 216, 255, 0.35);
+  font-size: 14px !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-shadow: none !important;
+}
+
+.dataTables_wrapper .dt-button:hover,
+.dataTables_wrapper .dt-button:focus {
+  background: #dceaf6 !important;
+  color: #111827 !important;
+  outline: none !important;
+}
+
+.dataTables_wrapper .dt-button.buttons-columnVisibility.active,
+.dataTables_wrapper .dt-button.active {
+  background: #dceaf6 !important;
+  color: #111827 !important;
+  font-weight: 700;
+}
+
+.dataTables_wrapper .dt-button-collection {
+  border: 0 !important;
+  border-radius: 18px !important;
+  padding: 10px !important;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12) !important;
+  background: #ffffff !important;
+}
+
+.dataTables_wrapper .dt-button-collection .dt-button {
+  width: 100%;
+  justify-content: flex-start;
+  box-shadow: none !important;
+  background: transparent !important;
+  border-radius: 12px !important;
+}
+
+.dataTables_wrapper .dt-button-collection .dt-button:hover {
+  background: #eef6fc !important;
+}
+
+.ovak-dt-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.ovak-dt-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 12px;
 }
 
 /* Visualizations page */
@@ -1067,8 +1393,6 @@ body {
 
 /* Information page */
 
-/* Information page */
-
 .ovak-information-page {
   width: 100%;
 }
@@ -1199,14 +1523,6 @@ body {
     padding: 12px 14px;
   }
 
-  .ovak-chart-bars {
-    gap: 14px;
-  }
-
-  .ovak-chart-bar-item {
-    min-width: 84px;
-    flex-basis: 84px;
-  }
 
   .ovak-visualizations-chip-row {
     gap: 12px;
@@ -1241,6 +1557,10 @@ body {
   .ovak-information-section p {
     font-size: 15px;
     line-height: 1.8;
+  }
+
+  .dataTables_wrapper .dataTables_filter input {
+    min-width: 180px;
   }
 }
 
@@ -1379,24 +1699,23 @@ body {
     font-size: 13px;
   }
 
-  .ovak-chart-bars {
-    min-height: 300px;
-    gap: 12px;
+  .ovak-chart-card {
+    padding: 14px;
+    border-radius: 16px;
+    min-height: 460px;
   }
 
-  .ovak-chart-bar-item {
-    min-width: 76px;
-    flex-basis: 76px;
+  .ovak-plugin-chart-actions {
+    gap: 8px;
+    margin-bottom: 14px;
   }
 
-  .ovak-chart-bar {
-    width: 44px;
+  .ovak-plugin-chart-button {
+    min-height: 36px;
+    padding: 0 14px;
+    font-size: 13px;
   }
 
-  .ovak-chart-bar-label,
-  .ovak-chart-bar-value {
-    font-size: 12px;
-  }
 
   .ovak-visualizations-breadcrumbs {
     gap: 8px;
@@ -1467,7 +1786,7 @@ body {
     font-size: 14px;
   }
 
-    .ovak-information-hero {
+  .ovak-information-hero {
     margin-bottom: 22px;
   }
 
@@ -1503,4 +1822,184 @@ body {
     line-height: 1.75;
     margin-bottom: 16px;
   }
+
+  .dataTables_wrapper .dataTables_length,
+  .dataTables_wrapper .dataTables_filter,
+  .dataTables_wrapper .dataTables_info,
+  .dataTables_wrapper .dataTables_paginate,
+  .dataTables_wrapper .dt-buttons {
+    width: 100%;
+  }
+
+  .dataTables_wrapper .dataTables_length label,
+  .dataTables_wrapper .dataTables_filter label {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .dataTables_wrapper .dataTables_filter input {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .dataTables_wrapper .dataTables_paginate,
+  .dataTables_wrapper .dt-buttons {
+    justify-content: flex-start;
+  }
+
+  .ovak-table-card {
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .ovak-filter-row th {
+    padding: 6px !important;
+  }
+
+  .ovak-column-filter {
+    min-width: 90px;
+    height: 32px;
+    font-size: 12px;
+    padding: 0 10px;
+  }
+
+  .ovak-dt-top,
+  .ovak-dt-bottom {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* DataTables column filter row: inside the table header, not as a separate block above the table */
+
+table.ovak-data-table.dataTable thead tr.ovak-filter-row th {
+  padding: 8px !important;
+  background: #eef6fc !important;
+  border-bottom: 1px solid #d6e4f0 !important;
+}
+
+table.ovak-data-table.dataTable thead tr.ovak-filter-row th::before,
+table.ovak-data-table.dataTable thead tr.ovak-filter-row th::after {
+  display: none !important;
+}
+
+table.ovak-data-table.dataTable thead tr.ovak-filter-row input.ovak-column-filter {
+  width: 100%;
+  min-width: 110px;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #111827;
+  font-size: 13px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+table.ovak-data-table.dataTable thead tr.ovak-filter-row input.ovak-column-filter:focus {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.25);
+}
+
+@media (max-width: 640px) {
+  table.ovak-data-table.dataTable thead tr.ovak-filter-row input.ovak-column-filter {
+    min-width: 90px;
+    height: 32px;
+    font-size: 12px;
+    padding: 0 10px;
+  }
+}
+
+/* CKAN table DataTables header/body */
+
+#ovak-column-filters,
+.ovak-column-filters,
+table.ovak-data-table.dataTable thead tr.ovak-filter-row {
+  display: none !important;
+}
+
+.ovak-table-card {
+  overflow: hidden !important;
+}
+
+.ovak-table-scroll {
+  width: 100% !important;
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  padding-bottom: 6px !important;
+}
+
+div.dataTables_scroll,
+div.dataTables_scrollHead,
+div.dataTables_scrollBody,
+div.dataTables_scrollHeadInner {
+  width: 100% !important;
+  overflow: visible !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-sizing: border-box !important;
+}
+
+.table.ovak-data-table,
+table.ovak-data-table.dataTable {
+  width: max-content !important;
+  min-width: 100% !important;
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  table-layout: auto !important;
+  margin: 0 !important;
+  background: #ffffff !important;
+}
+
+table.ovak-data-table.dataTable thead tr,
+table.ovak-data-table.dataTable tbody tr {
+  height: auto !important;
+}
+
+table.ovak-data-table.dataTable thead th,
+table.ovak-data-table.dataTable tbody td {
+  box-sizing: border-box !important;
+  padding: 14px 16px !important;
+  border: 1px solid #8f8f8f !important;
+  vertical-align: middle !important;
+  white-space: nowrap !important;
+  line-height: 1.45 !important;
+}
+
+table.ovak-data-table.dataTable thead th {
+  background: #dceaf6 !important;
+  color: #111827 !important;
+  font-weight: 700 !important;
+}
+
+table.ovak-data-table.dataTable tbody td {
+  background: #ffffff !important;
+  color: #111827 !important;
+}
+
+table.ovak-data-table.dataTable tbody tr:hover td {
+  background: #f8fbff !important;
+}
+
+div.dataTables_scrollBody thead,
+div.dataTables_scrollBody thead tr,
+div.dataTables_scrollBody thead th,
+div.dataTables_scrollBody thead td {
+  display: none !important;
+  height: 0 !important;
+  max-height: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  line-height: 0 !important;
+  font-size: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Resource toolbar tweaks */
+
+.dataTables_wrapper .dt-button.ovak-copy-api-button.is-copied {
+  background: #dceaf6 !important;
+  color: #111827 !important;
+  font-weight: 700;
 }
