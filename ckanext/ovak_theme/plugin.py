@@ -155,18 +155,12 @@ def ovak_resource_page(dataset_name: str, resource_id: str):
     if not resource:
         toolkit.abort(404, "Resource not found")
 
-    resource_views = toolkit.get_action("resource_view_list")(
-        context,
-        {"id": resource_id}
-    )
-
     return toolkit.render(
         "package/ovak_resource_csv.html",
         extra_vars={
             "package": package,
             "pkg_dict": package,
-            "resource": resource,
-            "resource_views": resource_views,
+            "resource": resource
         }
     )
 
