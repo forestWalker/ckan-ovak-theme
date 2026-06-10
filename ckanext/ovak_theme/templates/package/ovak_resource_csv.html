@@ -11,10 +11,38 @@
 {% set dataset_title = h.dataset_display_name(package) %}
 {% set resource_title = h.resource_display_name(resource) %}
 {% set resource_description = h.get_translated(resource, 'description') if resource.description else '' %}
+{% set available_views = resource_views if resource_views is defined else [] %}
+{% set table_views = [] %}
+{% set chart_views = [] %}
+
+{% for view in available_views %}
+  {% if view.view_type in ['datatables_view', 'datastore_view', 'recline_view', 'table_view'] %}
+    {% set _ = table_views.append(view) %}
+  {% endif %}
+  {% if view.view_type in ['charts_view', 'charts_builder_view'] %}
+    {% set _ = chart_views.append(view) %}
+  {% endif %}
+{% endfor %}
 
 {% block page_class %} ovak-resource-page{% endblock %}
 
 {% block content %}
+<style>
+  div.resourceinfo,
+  div.sortinfo,
+  #dtv-resource-info,
+  .resourceinfo,
+  .sortinfo {
+    visibility: hidden !important;
+    pointer-events: none !important;
+    height: 24px !important;
+    min-height: 24px !important;
+    max-height: 24px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+</style>
   <nav class="ovak-breadcrumbs" aria-label="Breadcrumb">
     <a href="/">{{ resource_page.breadcrumbs.home }}</a>
     <span class="ovak-breadcrumbs__sep">›</span>
@@ -39,335 +67,379 @@
     {% endif %}
   </section>
 
-  <section class="ovak-resource-tab-row">
+  <section class="ovak-resource-tab-row" id="ovak-resource-tabs">
     <button type="button" class="ovak-resource-tab is-active" data-ovak-tab="table">
       <span class="ovak-resource-tab__label">
         {{ resource_page.views.table if resource_page.views and resource_page.views.table else 'Table' }}
       </span>
     </button>
 
-    <button type="button" class="ovak-resource-tab" data-ovak-tab="bar">
+    <button type="button" class="ovak-resource-tab" data-ovak-tab="plugin-charts">
       <span class="ovak-resource-tab__label">
-        {{ 'Oszlopdiagram' if lang == 'hu' else 'Bar chart' }}
+        {{ 'Grafikonok' if lang == 'hu' else 'Charts' }}
       </span>
     </button>
 
-    <button type="button" class="ovak-resource-tab" data-ovak-tab="line">
+    <button type="button" class="ovak-resource-tab ovak-resource-api-button" data-ovak-api-open>
       <span class="ovak-resource-tab__label">
-        {{ 'Vonaldiagram' if lang == 'hu' else 'Line chart' }}
-      </span>
-    </button>
-
-    <button type="button" class="ovak-resource-tab" data-ovak-tab="pie">
-      <span class="ovak-resource-tab__label">
-        {{ 'Kördiagram' if lang == 'hu' else 'Pie chart' }}
+        {{ 'Adat API' if lang == 'hu' else 'Data API' }}
       </span>
     </button>
   </section>
 
   <section class="ovak-resource-view-body">
     <div class="ovak-resource-panel is-active" data-ovak-panel="table">
-      <div class="ovak-table-card">
-        <div class="ovak-table-state" id="ovak-table-state">
-          {{ 'Betöltés...' if lang == 'hu' else 'Loading...' }}
-        </div>
-        <div class="ovak-table-scroll" id="ovak-table-scroll" hidden>
-          <table class="ovak-data-table">
-            <thead id="ovak-data-thead"></thead>
-            <tbody id="ovak-data-tbody"></tbody>
-          </table>
-        </div>
+      <div class="ovak-table-card ovak-native-resource-view">
+        {% if table_views|length > 0 %}
+          {% set table_view = table_views[0] %}
+          <div class="ovak-native-table-view">
+            {% snippet "package/snippets/resource_view.html",
+              resource_view=table_view,
+              resource=resource,
+              package=package
+            %}
+          </div>
+        {% else %}
+          <div class="ovak-table-state">
+            {{ 'Ehhez az erőforráshoz nincs CKAN táblázatos nézet létrehozva. Hozz létre egy DataTables/DataStore nézetet az erőforráshoz.' if lang == 'hu' else 'No CKAN table view has been created for this resource. Create a DataTables/DataStore view for this resource.' }}
+          </div>
+        {% endif %}
       </div>
     </div>
 
-    <div class="ovak-resource-panel" data-ovak-panel="bar">
+    <div class="ovak-resource-panel" data-ovak-panel="plugin-charts">
       <div class="ovak-chart-card">
-        <div class="ovak-chart-state" id="ovak-bar-state">
-          {{ 'Betöltés...' if lang == 'hu' else 'Loading...' }}
-        </div>
-        <div class="ovak-chart-wrap">
-          <canvas id="ovak-bar-chart" hidden></canvas>
-        </div>
-      </div>
-    </div>
+        {% if chart_views|length > 0 %}
+          <div class="ovak-plugin-chart-actions">
+            {% for view in chart_views %}
+              <button
+                type="button"
+                class="ovak-plugin-chart-button{% if loop.first %} is-active{% endif %}"
+                data-ovak-chart-view="{{ view.id }}">
+                {{ view.title or view.view_type }}
+              </button>
+            {% endfor %}
+          </div>
 
-    <div class="ovak-resource-panel" data-ovak-panel="line">
-      <div class="ovak-chart-card">
-        <div class="ovak-chart-state" id="ovak-line-state">
-          {{ 'Betöltés...' if lang == 'hu' else 'Loading...' }}
-        </div>
-        <div class="ovak-chart-wrap">
-          <canvas id="ovak-line-chart" hidden></canvas>
-        </div>
-      </div>
-    </div>
-
-    <div class="ovak-resource-panel" data-ovak-panel="pie">
-      <div class="ovak-chart-card">
-        <div class="ovak-chart-state" id="ovak-pie-state">
-          {{ 'Betöltés...' if lang == 'hu' else 'Loading...' }}
-        </div>
-        <div class="ovak-chart-wrap">
-          <canvas id="ovak-pie-chart" hidden></canvas>
-        </div>
+          {% for view in chart_views %}
+            <div
+              class="ovak-plugin-chart-panel{% if loop.first %} is-active{% endif %}"
+              data-ovak-chart-panel="{{ view.id }}"
+              data-ovak-chart-src="{{ h.url_for(package.type ~ '.read', id=package.name) }}/resource/{{ resource.id }}/view/{{ view.id }}">
+              <div class="ovak-chart-loading">
+                {{ 'Grafikon betöltése...' if lang == 'hu' else 'Loading chart...' }}
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="ovak-chart-state">
+            {{ 'Ehhez az erőforráshoz még nincs plugin alapú chart nézet létrehozva.' if lang == 'hu' else 'No plugin-based chart view has been created for this resource yet.' }}
+          </div>
+        {% endif %}
       </div>
     </div>
   </section>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const lang = {{ ('hu' if lang == 'hu' else 'en') | tojson }};
-      const resourceId = {{ resource.id | tojson }};
-      const datastoreUrl = '/api/3/action/datastore_search?resource_id=' + encodeURIComponent(resourceId) + '&limit=100';
+  <div class="ovak-api-modal" id="ovak-api-modal" hidden>
+    <div class="ovak-api-modal__backdrop" data-ovak-api-close></div>
 
-      const tableState = document.getElementById('ovak-table-state');
-      const tableScroll = document.getElementById('ovak-table-scroll');
-      const thead = document.getElementById('ovak-data-thead');
-      const tbody = document.getElementById('ovak-data-tbody');
+    <section class="ovak-api-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="ovak-api-modal-title">
+      <button type="button" class="ovak-api-modal__close" data-ovak-api-close aria-label="{{ 'Bezárás' if lang == 'hu' else 'Close' }}">×</button>
 
-      const barState = document.getElementById('ovak-bar-state');
-      const lineState = document.getElementById('ovak-line-state');
-      const pieState = document.getElementById('ovak-pie-state');
+      <h2 id="ovak-api-modal-title">
+        {{ 'Adat API CKAN' if lang == 'hu' else 'CKAN Data API' }}
+      </h2>
 
-      const barCanvas = document.getElementById('ovak-bar-chart');
-      const lineCanvas = document.getElementById('ovak-line-chart');
-      const pieCanvas = document.getElementById('ovak-pie-chart');
+      <p class="ovak-api-modal__lead">
+        {{ 'Az erőforrás adatai a CKAN Action API-n keresztül érhetők el.' if lang == 'hu' else 'The resource data can be accessed through the CKAN Action API.' }}
+      </p>
 
-      let barChart = null;
-      let lineChart = null;
-      let pieChart = null;
+      <div class="ovak-api-section">
+        <h3>{{ 'Műveletek' if lang == 'hu' else 'Actions' }}</h3>
 
-      function t(hu, en) {
-        return lang === 'hu' ? hu : en;
+        <table class="ovak-api-table">
+          <tbody>
+            <tr>
+              <th>{{ 'Létrehozás' if lang == 'hu' else 'Create' }}</th>
+              <td><code>{{ h.url_for('api.action', logic_function='datastore_create', ver=3, qualified=True) }}</code></td>
+            </tr>
+            <tr>
+              <th>{{ 'Frissítés / beszúrás' if lang == 'hu' else 'Update / Insert' }}</th>
+              <td><code>{{ h.url_for('api.action', logic_function='datastore_upsert', ver=3, qualified=True) }}</code></td>
+            </tr>
+            <tr>
+              <th>{{ 'Lekérdezés' if lang == 'hu' else 'Query' }}</th>
+              <td><code>{{ h.url_for('api.action', logic_function='datastore_search', ver=3, qualified=True) }}</code></td>
+            </tr>
+            <tr>
+              <th>{{ 'SQL lekérdezés' if lang == 'hu' else 'SQL query' }}</th>
+              <td><code>{{ h.url_for('api.action', logic_function='datastore_search_sql', ver=3, qualified=True) }}</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="ovak-api-section">
+        <h3>OData</h3>
+        <p>
+          <code>{{ h.url_for('/', qualified=True).rstrip('/') }}/datastore/odata3.0/{{ resource.id }}</code>
+        </p>
+      </div>
+
+      <div class="ovak-api-section">
+        <h3>{{ 'Példák' if lang == 'hu' else 'Examples' }}</h3>
+
+        <p>
+          <strong>{{ 'Első 5 találat' if lang == 'hu' else 'First 5 results' }}</strong><br>
+          <code>{{ h.url_for('api.action', logic_function='datastore_search', ver=3, qualified=True) }}?resource_id={{ resource.id }}&amp;limit=5</code>
+        </p>
+
+        <p>
+          <strong>{{ 'Keresés szövegre' if lang == 'hu' else 'Search by text' }}</strong><br>
+          <code>{{ h.url_for('api.action', logic_function='datastore_search', ver=3, qualified=True) }}?resource_id={{ resource.id }}&amp;q=jones</code>
+        </p>
+
+        <p>
+          <strong>{{ 'SQL példa' if lang == 'hu' else 'SQL example' }}</strong><br>
+          <code>{{ h.url_for('api.action', logic_function='datastore_search_sql', ver=3, qualified=True) }}?sql=SELECT * FROM "{{ resource.id }}" WHERE title LIKE 'jones'</code>
+        </p>
+      </div>
+    </section>
+  </div>
+
+ <script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  function activateTab(tabName) {
+
+    document.querySelectorAll('[data-ovak-tab]').forEach(function (btn) {
+      btn.classList.toggle(
+        'is-active',
+        btn.getAttribute('data-ovak-tab') === tabName
+      );
+    });
+
+    document.querySelectorAll('[data-ovak-panel]').forEach(function (panel) {
+      panel.classList.toggle(
+        'is-active',
+        panel.getAttribute('data-ovak-panel') === tabName
+      );
+    });
+
+    window.setTimeout(function () {
+      window.dispatchEvent(new Event('resize'));
+    }, 120);
+  }
+
+  function fixDetachedLabels() {
+
+    document.querySelectorAll('label[for]').forEach(function (label, index) {
+
+      var targetId = label.getAttribute('for');
+
+      if (!targetId || document.getElementById(targetId)) {
+        return;
       }
 
-      function escapeHtml(value) {
-        return String(value ?? '')
-          .replaceAll('&', '&amp;')
-          .replaceAll('<', '&lt;')
-          .replaceAll('>', '&gt;')
-          .replaceAll('"', '&quot;')
-          .replaceAll("'", '&#039;');
-      }
+      var input = label.querySelector('input, select, textarea');
 
-      function isNumericValue(value) {
-        if (value === null || value === undefined || value === '') return false;
-        return !isNaN(Number(String(value).replace(',', '.')));
-      }
-
-      function toNumber(value) {
-        return Number(String(value).replace(',', '.'));
-      }
-
-      function buildTable(fields, records) {
-        thead.innerHTML = `
-          <tr>
-            ${fields.map(field => `<th>${escapeHtml(field)}</th>`).join('')}
-          </tr>
-        `;
-
-        tbody.innerHTML = records.map(row => `
-          <tr>
-            ${fields.map(field => `<td>${escapeHtml(row[field])}</td>`).join('')}
-          </tr>
-        `).join('');
-
-        tableState.hidden = true;
-        tableScroll.hidden = false;
-      }
-
-      function findBestDimensions(records, fields) {
-        const numericFields = fields.filter(field =>
-          records.some(row => isNumericValue(row[field]))
+      if (!input && label.parentElement) {
+        input = label.parentElement.querySelector(
+          'input, select, textarea'
         );
-
-        const labelFields = fields.filter(field => !numericFields.includes(field));
-
-        return {
-          labelField: labelFields[0] || fields[0] || null,
-          numericField: numericFields[0] || null
-        };
       }
 
-      function buildBarChart(records, labelField, numericField) {
-        if (!labelField || !numericField) {
-          barState.textContent = t('Nincs elég adat oszlopdiagramhoz.', 'Not enough data for bar chart.');
-          return;
-        }
-
-        const rows = records.filter(row => isNumericValue(row[numericField])).slice(0, 20);
-        if (!rows.length) {
-          barState.textContent = t('Nincs numerikus adat.', 'No numeric data.');
-          return;
-        }
-
-        const labels = rows.map(row => String(row[labelField] ?? ''));
-        const values = rows.map(row => toNumber(row[numericField]));
-
-        barCanvas.hidden = false;
-        barState.hidden = true;
-
-        if (barChart) {
-          barChart.destroy();
-        }
-
-        barChart = new Chart(barCanvas.getContext('2d'), {
-          type: 'bar',
-          data: {
-            labels,
-            datasets: [{
-              label: numericField,
-              data: values
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false
-          }
-        });
+      if (!input) {
+        return;
       }
 
-      function buildLineChart(records, labelField, numericField) {
-        if (!labelField || !numericField) {
-          lineState.textContent = t('Nincs elég adat vonaldiagramhoz.', 'Not enough data for line chart.');
-          return;
-        }
-
-        const rows = records.filter(row => isNumericValue(row[numericField])).slice(0, 30);
-        if (!rows.length) {
-          lineState.textContent = t('Nincs numerikus adat.', 'No numeric data.');
-          return;
-        }
-
-        const labels = rows.map(row => String(row[labelField] ?? ''));
-        const values = rows.map(row => toNumber(row[numericField]));
-
-        lineCanvas.hidden = false;
-        lineState.hidden = true;
-
-        if (lineChart) {
-          lineChart.destroy();
-        }
-
-        lineChart = new Chart(lineCanvas.getContext('2d'), {
-          type: 'line',
-          data: {
-            labels,
-            datasets: [{
-              label: numericField,
-              data: values
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false
-          }
-        });
+      if (!input.id) {
+        input.id = 'ovak-fixed-form-field-' + index;
       }
 
-      function buildPieChart(records, labelField, numericField) {
-        if (!labelField || !numericField) {
-          pieState.textContent = t('Nincs elég adat kördiagramhoz.', 'Not enough data for pie chart.');
+      label.setAttribute('for', input.id);
+    });
+  }
+
+  function resizePluginCharts() {
+    window.dispatchEvent(new Event('resize'));
+
+    document.querySelectorAll('[data-ovak-panel="plugin-charts"] iframe').forEach(function (iframe) {
+      try {
+        if (iframe.contentWindow) {
+          iframe.contentWindow.dispatchEvent(new Event('resize'));
+        }
+      } catch (e) {}
+    });
+  }
+
+  function schedulePluginChartResize() {
+    window.setTimeout(resizePluginCharts, 120);
+    window.setTimeout(resizePluginCharts, 300);
+    window.setTimeout(resizePluginCharts, 900);
+    window.setTimeout(resizePluginCharts, 1500);
+  }
+
+  function loadPluginChartPanel(panel) {
+    if (!panel || panel.getAttribute('data-ovak-chart-loaded') === 'true') {
+      return;
+    }
+
+    var src = panel.getAttribute('data-ovak-chart-src');
+
+    if (!src) {
+      return;
+    }
+
+    panel.innerHTML = '';
+
+    var iframe = document.createElement('iframe');
+    iframe.src = src;
+    iframe.className = 'ovak-plugin-chart-frame';
+    iframe.setAttribute('loading', 'lazy');
+    iframe.setAttribute('title', 'Chart view');
+    iframe.style.width = '100%';
+    iframe.style.minHeight = '560px';
+    iframe.style.border = '0';
+
+    iframe.addEventListener('load', function () {
+      cleanupResourceFooter();
+      schedulePluginChartResize();
+    });
+
+    panel.appendChild(iframe);
+    panel.setAttribute('data-ovak-chart-loaded', 'true');
+  }
+
+  function loadActivePluginChart() {
+    var activePanel = document.querySelector('.ovak-plugin-chart-panel.is-active');
+    loadPluginChartPanel(activePanel);
+  }
+
+  function cleanupResourceFooter() {
+    document.querySelectorAll('.resourceinfo, .sortinfo, #dtv-resource-info').forEach(function (el) {
+      el.style.visibility = 'hidden';
+      el.style.pointerEvents = 'none';
+      el.style.height = '24px';
+      el.style.minHeight = '24px';
+      el.style.maxHeight = '24px';
+      el.style.margin = '0';
+      el.style.padding = '0';
+      el.style.overflow = 'hidden';
+    });
+
+    document.querySelectorAll('iframe').forEach(function (iframe) {
+      try {
+        var doc = iframe.contentDocument || iframe.contentWindow.document;
+
+        if (!doc) {
           return;
         }
 
-        const grouped = new Map();
-        records.forEach(row => {
-          const label = String(row[labelField] ?? t('Ismeretlen', 'Unknown'));
-          const value = isNumericValue(row[numericField]) ? toNumber(row[numericField]) : 0;
-          grouped.set(label, (grouped.get(label) || 0) + value);
+        doc.querySelectorAll('.resourceinfo, .sortinfo, #dtv-resource-info').forEach(function (el) {
+          el.style.visibility = 'hidden';
+          el.style.pointerEvents = 'none';
+          el.style.height = '24px';
+          el.style.minHeight = '24px';
+          el.style.maxHeight = '24px';
+          el.style.margin = '0';
+          el.style.padding = '0';
+          el.style.overflow = 'hidden';
         });
 
-        const labels = Array.from(grouped.keys()).slice(0, 8);
-        const values = Array.from(grouped.values()).slice(0, 8);
-
-        if (!labels.length) {
-          pieState.textContent = t('Nincs adat kördiagramhoz.', 'No data for pie chart.');
-          return;
+        if (!doc.getElementById('ovak-hide-resource-footer')) {
+          var style = doc.createElement('style');
+          style.id = 'ovak-hide-resource-footer';
+          style.textContent = '.resourceinfo,.sortinfo,#dtv-resource-info{visibility:hidden!important;pointer-events:none!important;height:24px!important;min-height:24px!important;max-height:24px!important;margin:0!important;padding:0!important;overflow:hidden!important;}';
+          doc.head.appendChild(style);
         }
+      } catch (e) {}
+    });
+  }
 
-        pieCanvas.hidden = false;
-        pieState.hidden = true;
+  document.querySelectorAll('[data-ovak-tab]').forEach(function (btn) {
 
-        if (pieChart) {
-          pieChart.destroy();
-        }
+    btn.addEventListener('click', function () {
 
-        pieChart = new Chart(pieCanvas.getContext('2d'), {
-          type: 'pie',
-          data: {
-            labels,
-            datasets: [{
-              data: values
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false
-          }
-        });
+      var tabName = this.getAttribute('data-ovak-tab');
+
+      activateTab(tabName);
+
+      window.setTimeout(function () {
+        cleanupResourceFooter();
+      }, 300);
+
+      if (tabName === 'plugin-charts') {
+        window.setTimeout(loadActivePluginChart, 80);
+        schedulePluginChartResize();
       }
+    });
+  });
 
-      function activateTab(tabName) {
-        document.querySelectorAll('[data-ovak-tab]').forEach(btn => {
-          btn.classList.toggle('is-active', btn.getAttribute('data-ovak-tab') === tabName);
-        });
+  document.querySelectorAll('[data-ovak-chart-view]').forEach(function (button) {
 
-        document.querySelectorAll('[data-ovak-panel]').forEach(panel => {
-          panel.classList.toggle('is-active', panel.getAttribute('data-ovak-panel') === tabName);
-        });
-      }
+    button.addEventListener('click', function () {
 
-      document.querySelectorAll('[data-ovak-tab]').forEach(btn => {
-        btn.addEventListener('click', function () {
-          activateTab(this.getAttribute('data-ovak-tab'));
-        });
+      var viewId = this.getAttribute('data-ovak-chart-view');
+
+      document.querySelectorAll('[data-ovak-chart-view]').forEach(function (btn) {
+        btn.classList.toggle('is-active', btn === button);
       });
 
-      fetch(datastoreUrl)
-        .then(response => response.json())
-        .then(data => {
-          if (!data.success || !data.result || !data.result.records) {
-            throw new Error('Invalid datastore response');
-          }
+      document.querySelectorAll('[data-ovak-chart-panel]').forEach(function (panel) {
+        panel.classList.toggle(
+          'is-active',
+          panel.getAttribute('data-ovak-chart-panel') === viewId
+        );
+      });
 
-          const fields = (data.result.fields || [])
-            .map(field => field.id)
-            .filter(id => id !== '_id');
-
-          const records = (data.result.records || []).map(record => {
-            const cleaned = {};
-            fields.forEach(field => {
-              cleaned[field] = record[field];
-            });
-            return cleaned;
-          });
-
-          if (!fields.length || !records.length) {
-            tableState.textContent = t('Nincs megjeleníthető adat.', 'No data available.');
-            barState.textContent = t('Nincs megjeleníthető adat.', 'No data available.');
-            lineState.textContent = t('Nincs megjeleníthető adat.', 'No data available.');
-            pieState.textContent = t('Nincs megjeleníthető adat.', 'No data available.');
-            return;
-          }
-
-          buildTable(fields, records.slice(0, 50));
-
-          const dims = findBestDimensions(records, fields);
-          buildBarChart(records, dims.labelField, dims.numericField);
-          buildLineChart(records, dims.labelField, dims.numericField);
-          buildPieChart(records, dims.labelField, dims.numericField);
-        })
-        .catch(() => {
-          tableState.textContent = t(
-            'Nem sikerült betölteni az adatokat. Valószínűleg a resource még nincs Datastore-ba feldolgozva.',
-            'Could not load the data. The resource is probably not processed into Datastore yet.'
-          );
-          barState.textContent = t('A grafikon nem tölthető be.', 'The chart could not be loaded.');
-          lineState.textContent = t('A grafikon nem tölthető be.', 'The chart could not be loaded.');
-          pieState.textContent = t('A grafikon nem tölthető be.', 'The chart could not be loaded.');
-        });
+      window.setTimeout(loadActivePluginChart, 80);
+      schedulePluginChartResize();
     });
-  </script>
+  });
+
+  var apiModal = document.getElementById('ovak-api-modal');
+
+  function openApiModal() {
+
+    if (!apiModal) {
+      return;
+    }
+
+    apiModal.hidden = false;
+    document.body.classList.add('ovak-api-modal-open');
+  }
+
+  function closeApiModal() {
+
+    if (!apiModal) {
+      return;
+    }
+
+    apiModal.hidden = true;
+    document.body.classList.remove('ovak-api-modal-open');
+  }
+
+  document.querySelectorAll('[data-ovak-api-open]').forEach(function (button) {
+    button.addEventListener('click', openApiModal);
+  });
+
+  document.querySelectorAll('[data-ovak-api-close]').forEach(function (button) {
+    button.addEventListener('click', closeApiModal);
+  });
+
+  document.addEventListener('keydown', function (event) {
+
+    if (event.key === 'Escape') {
+      closeApiModal();
+    }
+  });
+
+  window.setTimeout(fixDetachedLabels, 500);
+  window.setTimeout(cleanupResourceFooter, 500);
+  window.setTimeout(cleanupResourceFooter, 1500);
+  window.setTimeout(cleanupResourceFooter, 3000);
+
+});
+</script>
 {% endblock %}
