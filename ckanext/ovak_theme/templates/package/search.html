@@ -74,6 +74,6 @@
   </section>
 
   <div class="ovak-simple-pagination">
-    {{ page.pager(q=request.args.get('q', '')) }}
+    {{ page.pager(q=request.args.get('q', ''), sort=current_sort) }}
   </div>
 {% endblock %}

@@ -12,6 +12,7 @@
 {% set resource_title = h.resource_display_name(resource) %}
 {% set resource_description = h.get_translated(resource, 'description') if resource.description else '' %}
 {% set available_views = resource_views if resource_views is defined else [] %}
+{% set can_manage_resource = h.check_access('package_update', {'id': package.id}) %}
 {% set table_views = [] %}
 {% set chart_views = [] %}
 
@@ -54,7 +55,20 @@
   </nav>
 
   <section class="ovak-resource-hero">
-    <h1>{{ dataset_title }}</h1>
+    <div class="ovak-dataset-detail-heading">
+      <h1>{{ dataset_title }}</h1>
+
+      {% if can_manage_resource %}
+        <div class="ovak-admin-actions">
+          <a class="ovak-edit-button" href="{{ h.url_for(package.type ~ '_resource.edit', id=package.name, resource_id=resource.id) }}">
+            {% if lang == 'hu' %}Er&#337;forr&aacute;s{% else %}Resource{% endif %}
+          </a>
+          <a class="ovak-edit-button ovak-edit-button--secondary" href="{{ h.url_for(package.type ~ '_resource.views', id=package.name, resource_id=resource.id) }}">
+            {% if lang == 'hu' %}N&eacute;zetek{% else %}Views{% endif %}
+          </a>
+        </div>
+      {% endif %}
+    </div>
 
     {% if resource_description %}
       <div class="ovak-resource-description">

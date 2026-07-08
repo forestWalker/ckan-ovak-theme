@@ -6,6 +6,7 @@
 {% endif %}
 
 {% set detail = content.dataset_detail_page %}
+{% set can_manage_resources = h.check_access('package_update', {'id': pkg.id}) %}
 {% set fallback_resource_name = 'Erőforrás' if lang == 'hu' else 'Resource' %}
 {% set download_aria = 'Erőforrás letöltése' if lang == 'hu' else 'Download resource' %}
 
@@ -37,6 +38,17 @@
 
           {% if resource_format %}
             <span class="ovak-resource-item__format">{{ resource_format }}</span>
+          {% endif %}
+
+          {% if can_manage_resources and resource.id %}
+            <div class="ovak-resource-item__admin">
+              <a href="{{ h.url_for(pkg.type ~ '_resource.edit', id=pkg.name, resource_id=resource.id) }}">
+                {% if lang == 'hu' %}Er&#337;forr&aacute;s{% else %}Resource{% endif %}
+              </a>
+              <a href="{{ h.url_for(pkg.type ~ '_resource.views', id=pkg.name, resource_id=resource.id) }}">
+                {% if lang == 'hu' %}N&eacute;zetek{% else %}Views{% endif %}
+              </a>
+            </div>
           {% endif %}
         </div>
       {% endfor %}

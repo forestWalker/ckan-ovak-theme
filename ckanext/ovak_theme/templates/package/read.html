@@ -8,8 +8,8 @@
 {% endif %}
 
 {% set detail = content.dataset_detail_page %}
-{% set dataset_title = h.dataset_display_name(pkg_dict) %}
-{% set dataset_notes = h.get_translated(pkg_dict, 'notes') if pkg_dict.notes else '' %}
+{% set dataset_title = h.dataset_display_name(pkg) %}
+{% set dataset_notes = h.get_translated(pkg_dict, 'notes') if pkg_dict.get('notes') else '' %}
 
 {% block page_class %} ovak-dataset-detail-page{% endblock %}
 
@@ -23,7 +23,20 @@
   </nav>
 
   <section class="ovak-dataset-detail-hero">
-    <h1>{{ dataset_title }}</h1>
+    <div class="ovak-dataset-detail-heading">
+      <h1>{{ dataset_title }}</h1>
+
+      {% if h.check_access('package_update', {'id': pkg.id}) %}
+        <div class="ovak-admin-actions">
+        <a class="ovak-edit-button" href="{{ h.url_for(pkg.type ~ '.edit', id=pkg.name) }}">
+          {{ detail.edit_button or ('Adatkészlet szerkesztése' if lang == 'hu' else 'Edit dataset') }}
+        </a>
+          <a class="ovak-edit-button ovak-edit-button--secondary" href="{{ h.url_for(pkg.type ~ '.resources', id=pkg.name) }}">
+            {% if lang == 'hu' %}Er&#337;forr&aacute;sok{% else %}Resources{% endif %}
+          </a>
+        </div>
+      {% endif %}
+    </div>
 
     {% if dataset_notes %}
       <div class="ovak-dataset-detail-description">
@@ -36,7 +49,7 @@
     {% endif %}
   </section>
 
-  {% snippet "package/snippets/resources_list.html", pkg=pkg_dict, resources=pkg_dict.resources %}
-  {% snippet "package/snippets/tags.html", tags=pkg_dict.tags %}
+  {% snippet "package/snippets/resources_list.html", pkg=pkg, resources=pkg.resources %}
+  {% snippet "package/snippets/tags.html", tags=pkg.tags %}
   {% snippet "package/snippets/additional_info.html", pkg_dict=pkg_dict %}
 {% endblock %}

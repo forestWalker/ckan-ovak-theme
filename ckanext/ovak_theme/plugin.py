@@ -1,16 +1,18 @@
-from pathlib import Path
 import json
+from pathlib import Path
+from urllib.parse import urlencode
 
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 from flask import Blueprint
 
 
-def read_json_file(filename: str) -> dict:
-    base_path = Path(__file__).resolve().parent / "content"
-    file_path = base_path / filename
+CONTENT_DIR = Path(__file__).resolve().parent / "content"
+CONTENT_CACHE = {}
 
-    fallback = {
+
+def _fallback_content(filename: str) -> dict:
+    return {
         "municipality_name": "Missing content",
         "portal_title": f"Missing JSON: {filename}",
         "nav": {
@@ -30,6 +32,18 @@ def read_json_file(filename: str) -> dict:
             "date": "",
             "body": ""
         },
+        "dataset_detail_page": {
+            "breadcrumbs": {
+                "home": "Home",
+                "datasets": "Datasets"
+            },
+            "resources_title": "Data",
+            "tags_title": "Tags",
+            "additional_info_title": "Additional information",
+            "edit_button": "Edit dataset",
+            "fields": {},
+            "empty": {}
+        },
         "footer": {
             "links": []
         },
@@ -45,56 +59,47 @@ def read_json_file(filename: str) -> dict:
         }
     }
 
+
+def _merge_missing_content(data: dict, fallback: dict) -> dict:
+    for key, value in fallback.items():
+        if key not in data:
+            data[key] = value
+        elif isinstance(value, dict) and isinstance(data[key], dict):
+            _merge_missing_content(data[key], value)
+    return data
+
+
+def read_json_file(filename: str) -> dict:
+    file_path = CONTENT_DIR / filename
+    fallback = _fallback_content(filename)
+
     if not file_path.exists():
         return fallback
 
     try:
+        mtime = file_path.stat().st_mtime
+        cached = CONTENT_CACHE.get(filename)
+        if cached and cached["mtime"] == mtime:
+            return cached["data"]
+
         with open(file_path, "r", encoding="utf-8") as f:
             data = json.load(f)
 
         if not isinstance(data, dict):
             return fallback
 
-        if "resource_page" not in data:
-            data["resource_page"] = fallback["resource_page"]
-
+        data = _merge_missing_content(data, fallback)
+        CONTENT_CACHE[filename] = {"mtime": mtime, "data": data}
         return data
 
     except Exception as e:
-        return {
-            "municipality_name": "Content error",
-            "portal_title": "JSON read error",
-            "nav": {
-                "datasets": "Datasets",
-                "visualizations": "Visualizations",
-                "information": "Information"
-            },
-            "search_placeholder": "Search",
-            "language_switch_label": "HU",
-            "chips": [],
-            "summary": {
-                "title": "Error loading summary",
-                "body": str(e)
-            },
-            "news": {
-                "title": "Error loading news",
-                "date": "",
-                "body": str(e)
-            },
-            "footer": {
-                "links": []
-            },
-            "resource_page": {
-                "breadcrumbs": {
-                    "home": "Home",
-                    "datasets": "Datasets"
-                },
-                "empty_description": "No description is available for this resource.",
-                "table_button": "Table",
-                "chart_button": "Chart",
-                "download_button": "Download"
-            }
-        }
+        fallback["municipality_name"] = "Content error"
+        fallback["portal_title"] = "JSON read error"
+        fallback["summary"]["title"] = "Error loading summary"
+        fallback["summary"]["body"] = str(e)
+        fallback["news"]["title"] = "Error loading news"
+        fallback["news"]["body"] = str(e)
+        return fallback
 
 
 def get_current_lang() -> str:
@@ -119,9 +124,8 @@ def get_language_switch_url() -> str:
     args = request.args.to_dict(flat=True)
     args["lang"] = new_lang
 
-    query = "&".join(f"{key}={value}" for key, value in args.items())
-
     path = request.path or "/"
+    query = urlencode(args)
 
     if query:
         return f"{path}?{query}"
