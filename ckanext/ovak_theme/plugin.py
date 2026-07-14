@@ -8,7 +8,9 @@ from flask import Blueprint
 
 
 CONTENT_DIR = Path(__file__).resolve().parent / "content"
+SLIDESHOW_DIR = Path(__file__).resolve().parent / "public" / "base" / "images" / "slide_show_img"
 CONTENT_CACHE = {}
+IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 
 
 def _fallback_content(filename: str) -> dict:
@@ -133,6 +135,24 @@ def get_language_switch_url() -> str:
     return f"{path}?lang={new_lang}"
 
 
+def get_slideshow_images() -> list[dict]:
+    if not SLIDESHOW_DIR.exists():
+        return []
+
+    images = []
+    for file_path in sorted(SLIDESHOW_DIR.iterdir()):
+        if not file_path.is_file() or file_path.suffix.lower() not in IMAGE_EXTENSIONS:
+            continue
+
+        title = file_path.stem.replace("-", " ").replace("_", " ").strip()
+        images.append({
+            "image": f"/base/images/slide_show_img/{file_path.name}",
+            "alt": title or file_path.name,
+        })
+
+    return images
+
+
 def visualizations_page():
     return toolkit.render("home/visualizations.html")
 
@@ -189,6 +209,7 @@ class OvakThemePlugin(plugins.SingletonPlugin):
             "ovak_read_json_file": read_json_file,
             "ovak_get_current_lang": get_current_lang,
             "ovak_get_language_switch_url": get_language_switch_url,
+            "ovak_get_slideshow_images": get_slideshow_images,
         }
 
     def get_blueprint(self):

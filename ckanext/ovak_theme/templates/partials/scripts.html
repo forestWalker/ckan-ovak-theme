@@ -56,5 +56,47 @@ document.addEventListener('DOMContentLoaded', function () {
       this.classList.add('is-active');
     });
   });
+
+  const slideshow = document.querySelector('[data-ovak-slideshow]');
+  if (slideshow) {
+    const slides = Array.from(slideshow.querySelectorAll('.ovak-hero-slide'));
+    const dots = Array.from(slideshow.querySelectorAll('[data-ovak-slide-dot]'));
+    if (slides.length > 1) {
+      let activeSlide = 0;
+      let isPaused = false;
+
+      function setActiveSlide(nextSlide) {
+        slides[activeSlide].classList.remove('is-active');
+        if (dots[activeSlide]) {
+          dots[activeSlide].classList.remove('is-active');
+        }
+        activeSlide = nextSlide;
+        slides[activeSlide].classList.add('is-active');
+        if (dots[activeSlide]) {
+          dots[activeSlide].classList.add('is-active');
+        }
+      }
+
+      dots.forEach(function (dot, index) {
+        dot.addEventListener('click', function () {
+          setActiveSlide(index);
+        });
+      });
+
+      slideshow.addEventListener('mouseenter', function () {
+        isPaused = true;
+      });
+
+      slideshow.addEventListener('mouseleave', function () {
+        isPaused = false;
+      });
+
+      window.setInterval(function () {
+        if (!isPaused) {
+          setActiveSlide((activeSlide + 1) % slides.length);
+        }
+      }, 4200);
+    }
+  }
 });
 </script>

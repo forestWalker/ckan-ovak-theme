@@ -12,6 +12,13 @@
 {% set resource_format = first_resource.format|upper if first_resource and first_resource.format else 'DATA' %}
 
 <article class="ovak-simple-card">
+  <div class="ovak-simple-card__meta">
+    {% if package.organization and package.organization.title %}
+      <span>{{ package.organization.title }}</span>
+    {% endif %}
+    <span>{{ package.resources|length }} {{ "erőforrás" if lang == "hu" else "resources" }}</span>
+  </div>
+
   <h2 class="ovak-simple-card__title">
     <a href="{{ h.url_for(package.type ~ '.read', id=package.name) }}">{{ package_title }}</a>
   </h2>
@@ -25,8 +32,11 @@
   </p>
 
   <div class="ovak-simple-card__actions">
+    <a class="ovak-simple-card__open" href="{{ h.url_for(package.type ~ '.read', id=package.name) }}">
+      {{ "Megnyitás" if lang == "hu" else "Open" }}
+    </a>
     <a class="ovak-simple-card__download" href="{{ resource_url }}" target="_blank" rel="noopener noreferrer">
-      <span>{{ resource_format }} {{ "fájl letöltése" if lang == "hu" else "file download" }}</span>
+      <span>{{ resource_format }} {{ "letöltés" if lang == "hu" else "download" }}</span>
       <img src="/base/images/icons/download.svg" alt="" class="ovak-simple-card__download-icon">
     </a>
   </div>

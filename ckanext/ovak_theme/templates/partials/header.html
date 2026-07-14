@@ -1,46 +1,20 @@
 <header class="ovak-topbar">
   <div class="ovak-topbar__inner">
-
-    <!-- LOGO -->
     <a class="ovak-brand ovak-brand--link" href="/">
       <img src="/base/images/icons/header-logo.svg" alt="Logo" class="ovak-brand__logo">
       <div class="ovak-brand__text">{{ content.municipality_name }}</div>
     </a>
 
-    <!-- NAV -->
     <nav class="ovak-nav" aria-label="Main navigation">
-
-      <a href="{{ h.url_for('dataset.search') }}">
-        {{ content.nav.datasets }}
-      </a>
-
-      <a href="{{ h.url_for('ovak_theme.visualizations') }}">
-        {{ content.nav.visualizations }}
-      </a>
-
-      <a href="{{ h.url_for('ovak_theme.information') }}">
-        {{ content.nav.information }}
-      </a>
-
+      <a href="{{ h.url_for('dataset.search') }}">{{ content.nav.datasets }}</a>
+      <a href="{{ h.url_for('ovak_theme.visualizations') }}">{{ content.nav.visualizations }}</a>
+      <a href="{{ h.url_for('ovak_theme.information') }}">{{ content.nav.information }}</a>
     </nav>
 
-    <!-- SEARCH -->
-    <div class="ovak-search" role="search">
-      <span class="ovak-search__icon">⌕</span>
-      <input
-        type="text"
-        placeholder="{{ content.search_placeholder }}"
-        aria-label="{{ content.search_placeholder }}"
-        onkeydown="if(event.key==='Enter'){window.location='{{ h.url_for('dataset.search') }}?q='+encodeURIComponent(this.value);}"
-      >
-    </div>
-
-    <!-- LANG -->
     <div class="ovak-lang">
       <a href="#" class="ovak-lang-toggle" data-target-lang="{{ 'hu' if lang == 'en' else 'en' }}">
         {{ content.language_switch_label }}
       </a>
     </div>
-
   </div>
 </header>
