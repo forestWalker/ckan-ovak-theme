@@ -1,4 +1,6 @@
 import json
+import re
+from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlencode
 
@@ -11,6 +13,50 @@ CONTENT_DIR = Path(__file__).resolve().parent / "content"
 SLIDESHOW_DIR = Path(__file__).resolve().parent / "public" / "base" / "images" / "slide_show_img"
 CONTENT_CACHE = {}
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+RESOURCE_DATE_RE = re.compile(
+    r"(?<!\d)(?P<year>20\d{2})[.\-/](?P<month>0?[1-9]|1[0-2])[.\-/](?P<day>0?[1-9]|[12]\d|3[01])"
+)
+
+
+def _resource_sort_datetime(resource: dict) -> datetime:
+    """Return the resource's logical date, preferring the date in its name."""
+    name = str(resource.get("name") or "")
+    match = RESOURCE_DATE_RE.search(name)
+    if match:
+        try:
+            return datetime(
+                int(match.group("year")),
+                int(match.group("month")),
+                int(match.group("day")),
+                tzinfo=timezone.utc,
+            )
+        except ValueError:
+            pass
+
+    for field in ("created", "last_modified", "metadata_modified"):
+        value = resource.get(field)
+        if not value:
+            continue
+        try:
+            parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+            return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+        except ValueError:
+            continue
+
+    return datetime.min.replace(tzinfo=timezone.utc)
+
+
+def sort_resources_newest_first(resources: list[dict] | None) -> list[dict]:
+    """Sort CKAN resources newest-first without mutating package_show data."""
+    return sorted(
+        resources or [],
+        key=lambda resource: (
+            _resource_sort_datetime(resource),
+            str(resource.get("created") or ""),
+            str(resource.get("name") or "").casefold(),
+        ),
+        reverse=True,
+    )
 
 
 def _fallback_content(filename: str) -> dict:
@@ -210,6 +256,7 @@ class OvakThemePlugin(plugins.SingletonPlugin):
             "ovak_get_current_lang": get_current_lang,
             "ovak_get_language_switch_url": get_language_switch_url,
             "ovak_get_slideshow_images": get_slideshow_images,
+            "ovak_sort_resources_newest_first": sort_resources_newest_first,
         }
 
     def get_blueprint(self):

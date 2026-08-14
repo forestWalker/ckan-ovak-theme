@@ -43,7 +43,11 @@
     padding: 0 !important;
     overflow: hidden !important;
   }
-</style>
+  .ovak-native-table-view #dtprv th:first-child,
+  .ovak-native-table-view #dtprv td:first-child,
+  .ovak-native-table-view #dtprv tr > th:first-child {
+    display: none !important;
+  }</style>
   <nav class="ovak-breadcrumbs" aria-label="Breadcrumb">
     <a href="/">{{ resource_page.breadcrumbs.home }}</a>
     <span class="ovak-breadcrumbs__sep">›</span>
@@ -82,25 +86,27 @@
   </section>
 
   <section class="ovak-resource-tab-row" id="ovak-resource-tabs">
-    <button type="button" class="ovak-resource-tab is-active" data-ovak-tab="table">
-      <span class="ovak-resource-tab__label">
-        {{ resource_page.views.table if resource_page.views and resource_page.views.table else 'Table' }}
-      </span>
-    </button>
+    <div class="ovak-resource-tab-row__primary" role="tablist" aria-label="{{ 'Erőforrásnézetek' if lang == 'hu' else 'Resource views' }}">
+      <button type="button" class="ovak-resource-tab is-active" data-ovak-tab="table" role="tab" aria-selected="true">
+        <span class="ovak-resource-tab__label">
+          {{ resource_page.views.table if resource_page.views and resource_page.views.table else 'Table' }}
+        </span>
+      </button>
 
-    <button type="button" class="ovak-resource-tab" data-ovak-tab="plugin-charts">
-      <span class="ovak-resource-tab__label">
-        {{ 'Grafikonok' if lang == 'hu' else 'Charts' }}
-      </span>
-    </button>
+      <button type="button" class="ovak-resource-tab" data-ovak-tab="plugin-charts" role="tab" aria-selected="false">
+        <span class="ovak-resource-tab__label">
+          {{ 'Grafikonok' if lang == 'hu' else 'Charts' }}
+        </span>
+      </button>
+    </div>
 
     <button type="button" class="ovak-resource-tab ovak-resource-api-button" data-ovak-api-open>
+      <span class="fa fa-database" aria-hidden="true"></span>
       <span class="ovak-resource-tab__label">
         {{ 'Adat API' if lang == 'hu' else 'Data API' }}
       </span>
     </button>
   </section>
-
   <section class="ovak-resource-view-body">
     <div class="ovak-resource-panel is-active" data-ovak-panel="table">
       <div class="ovak-table-card ovak-native-resource-view">
@@ -227,10 +233,9 @@ document.addEventListener('DOMContentLoaded', function () {
   function activateTab(tabName) {
 
     document.querySelectorAll('[data-ovak-tab]').forEach(function (btn) {
-      btn.classList.toggle(
-        'is-active',
-        btn.getAttribute('data-ovak-tab') === tabName
-      );
+      var isActive = btn.getAttribute('data-ovak-tab') === tabName;
+      btn.classList.toggle('is-active', isActive);
+      btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
     });
 
     document.querySelectorAll('[data-ovak-panel]').forEach(function (panel) {
@@ -292,6 +297,31 @@ document.addEventListener('DOMContentLoaded', function () {
     window.setTimeout(resizePluginCharts, 300);
     window.setTimeout(resizePluginCharts, 900);
     window.setTimeout(resizePluginCharts, 1500);
+  }
+
+  function resizeTableFrames() {
+    document.querySelectorAll('[data-ovak-panel="table"] iframe').forEach(function (iframe) {
+      try {
+        var frameWindow = iframe.contentWindow;
+        if (!frameWindow) return;
+        frameWindow.dispatchEvent(new Event('resize'));
+
+        var frameJQuery = frameWindow.jQuery;
+        if (frameJQuery && frameJQuery.fn && frameJQuery.fn.dataTable) {
+          frameJQuery(iframe.contentDocument).find('table.dataTable').each(function () {
+            if (frameJQuery.fn.dataTable.isDataTable(this)) {
+              frameJQuery(this).DataTable().columns.adjust().draw(false);
+            }
+          });
+        }
+      } catch (e) {}
+    });
+  }
+
+  function scheduleTableResize() {
+    window.setTimeout(resizeTableFrames, 120);
+    window.setTimeout(resizeTableFrames, 400);
+    window.setTimeout(resizeTableFrames, 1000);
   }
 
   function loadPluginChartPanel(panel) {
@@ -386,6 +416,8 @@ document.addEventListener('DOMContentLoaded', function () {
       if (tabName === 'plugin-charts') {
         window.setTimeout(loadActivePluginChart, 80);
         schedulePluginChartResize();
+      } else if (tabName === 'table') {
+        scheduleTableResize();
       }
     });
   });
@@ -453,6 +485,36 @@ document.addEventListener('DOMContentLoaded', function () {
   window.setTimeout(cleanupResourceFooter, 500);
   window.setTimeout(cleanupResourceFooter, 1500);
   window.setTimeout(cleanupResourceFooter, 3000);
+
+  document.querySelectorAll('[data-ovak-panel="table"] iframe').forEach(function (iframe) {
+    iframe.addEventListener('load', scheduleTableResize);
+  });
+  scheduleTableResize();
+
+  function hideTechnicalTableColumns() {
+    document.querySelectorAll('table').forEach(function (table) {
+      var headers = Array.prototype.slice.call(table.querySelectorAll('thead th'));
+      if (!headers.length) return;
+      var normalized = headers.map(function (header) {
+        return header.textContent.toLowerCase().replace(/[^a-z0-9]/g, '');
+      });
+      headers.forEach(function (header, index) {
+        var key = normalized[index];
+        var isTechnical = key === 'id' || key === 'recordkey' || key === 'recordid' || key === '_id';
+        if (!isTechnical && key.endsWith('id')) {
+          var prefix = key.slice(0, -2);
+          isTechnical = normalized.indexOf(prefix + 'name') !== -1 || normalized.indexOf(prefix + 'shortname') !== -1 || ['commuterid', 'anonymizedid', 'tripid', 'shapeid', 'routeid', 'agencyid', 'deviceid', 'organizationid'].indexOf(key) !== -1;
+        }
+        if (!isTechnical) return;
+        header.style.display = 'none';
+        table.querySelectorAll('tbody tr').forEach(function (row) {
+          if (row.cells[index]) row.cells[index].style.display = 'none';
+        });
+      });
+    });
+  }
+
+  hideTechnicalTableColumns();
 
 });
 </script>

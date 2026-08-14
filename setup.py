@@ -4,8 +4,7 @@ setup(
     name="ckanext-ovak-theme",
     version="0.0.1",
     description="OVAK custom CKAN theme",
-    packages=['ckanext.ovak_theme'],
-    package_dir={'ckanext.ovak_theme': 'ckanext/ovak_theme', '': '.'},
+    packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
     entry_points="""

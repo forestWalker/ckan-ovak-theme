@@ -7,15 +7,19 @@
 
 {% set detail = content.dataset_detail_page %}
 {% set can_manage_resources = h.check_access('package_update', {'id': pkg.id}) %}
+{% set sorted_resources = h.ovak_sort_resources_newest_first(resources) %}
+{% set resource_list_scrollable = sorted_resources|length > 10 %}
+{% set resource_list_aria = 'G&ouml;rgethet&#337; er&#337;forr&aacute;slista' if lang == 'hu' else 'Scrollable resource list' %}
 {% set fallback_resource_name = 'Erőforrás' if lang == 'hu' else 'Resource' %}
 {% set download_aria = 'Erőforrás letöltése' if lang == 'hu' else 'Download resource' %}
 
 <section class="ovak-detail-section ovak-detail-section--resources">
   <h2>{{ detail.resources_title }}</h2>
 
-  {% if resources %}
-    <div class="ovak-resource-list">
-      {% for resource in resources %}
+  {% if sorted_resources %}
+    <div class="ovak-resource-list{% if resource_list_scrollable %} ovak-resource-list--scrollable{% endif %}"
+      {% if resource_list_scrollable %}tabindex="0" role="region" aria-label="{{ resource_list_aria }}"{% endif %}>
+      {% for resource in sorted_resources %}
         {% set resource_name = resource.name or resource.url or fallback_resource_name %}
         {% set resource_format = resource.format|upper if resource.format else '' %}
 
@@ -53,6 +57,30 @@
         </div>
       {% endfor %}
     </div>
+    <script>
+      (function () {
+        var list = document.currentScript.previousElementSibling;
+        if (!list || !list.classList.contains('ovak-resource-list')) return;
+
+        var datePattern = /(?:^|\D)(20\d{2})[.\-/](0?[1-9]|1[0-2])[.\-/](0?[1-9]|[12]\d|3[01])(?:\D|$)/;
+        var items = Array.prototype.slice.call(list.querySelectorAll(':scope > .ovak-resource-item'));
+
+        items.sort(function (left, right) {
+          function timestamp(item) {
+            var label = item.querySelector('.ovak-resource-item__name');
+            var match = datePattern.exec(label ? label.textContent : '');
+            if (!match) return 0;
+            return Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+          }
+
+          return timestamp(right) - timestamp(left);
+        });
+
+        items.forEach(function (item) {
+          list.appendChild(item);
+        });
+      }());
+    </script>
   {% else %}
     <p class="ovak-detail-empty">{{ detail.empty.resources }}</p>
   {% endif %}
