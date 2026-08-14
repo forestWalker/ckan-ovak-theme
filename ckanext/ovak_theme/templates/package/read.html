@@ -1,6 +1,7 @@
 {% extends "_layout.html" %}
 
 {% set lang = h.ovak_get_current_lang() %}
+
 {% if lang == 'hu' %}
   {% set content = h.ovak_read_json_file('homepage_hu.json') %}
 {% else %}
@@ -8,48 +9,92 @@
 {% endif %}
 
 {% set detail = content.dataset_detail_page %}
+{% set pkg = pkg_dict %}
 {% set dataset_title = h.dataset_display_name(pkg) %}
-{% set dataset_notes = h.get_translated(pkg_dict, 'notes') if pkg_dict.get('notes') else '' %}
+{% set dataset_notes = h.get_translated(pkg, 'notes') if pkg.get('notes') else '' %}
 
 {% block page_class %} ovak-dataset-detail-page{% endblock %}
 
 {% block content %}
+
   <nav class="ovak-breadcrumbs" aria-label="Breadcrumb">
     <a href="/">{{ detail.breadcrumbs.home }}</a>
+
     <span class="ovak-breadcrumbs__sep">›</span>
-    <a href="{{ h.url_for('dataset.search') }}">{{ detail.breadcrumbs.datasets }}</a>
+
+    <a href="{{ h.url_for('dataset.search') }}">
+      {{ detail.breadcrumbs.datasets }}
+    </a>
+
     <span class="ovak-breadcrumbs__sep">›</span>
+
     <span>{{ dataset_title }}</span>
   </nav>
 
+
   <section class="ovak-dataset-detail-hero">
+
     <div class="ovak-dataset-detail-heading">
+
       <h1>{{ dataset_title }}</h1>
 
       {% if h.check_access('package_update', {'id': pkg.id}) %}
+
         <div class="ovak-admin-actions">
-        <a class="ovak-edit-button" href="{{ h.url_for(pkg.type ~ '.edit', id=pkg.name) }}">
-          {{ detail.edit_button or ('Adatkészlet szerkesztése' if lang == 'hu' else 'Edit dataset') }}
-        </a>
-          <a class="ovak-edit-button ovak-edit-button--secondary" href="{{ h.url_for(pkg.type ~ '.resources', id=pkg.name) }}">
-            {% if lang == 'hu' %}Er&#337;forr&aacute;sok{% else %}Resources{% endif %}
+
+          <a
+            class="ovak-edit-button"
+            href="{{ h.url_for(pkg.type ~ '.edit', id=pkg.name) }}"
+          >
+            {{ detail.edit_button or ('Adatkészlet szerkesztése' if lang == 'hu' else 'Edit dataset') }}
           </a>
+
+          <a
+            class="ovak-edit-button ovak-edit-button--secondary"
+            href="{{ h.url_for(pkg.type ~ '.resources', id=pkg.name) }}"
+          >
+            {% if lang == 'hu' %}
+              Er&#337;forr&aacute;sok
+            {% else %}
+              Resources
+            {% endif %}
+          </a>
+
         </div>
+
       {% endif %}
+
     </div>
 
+
     {% if dataset_notes %}
+
       <div class="ovak-dataset-detail-description">
         {{ h.render_markdown(dataset_notes) }}
       </div>
+
     {% else %}
+
       <p class="ovak-dataset-detail-description ovak-dataset-detail-description--empty">
         {{ detail.empty.description }}
       </p>
+
     {% endif %}
+
   </section>
 
-  {% snippet "package/snippets/resources_list.html", pkg=pkg, resources=pkg.resources %}
-  {% snippet "package/snippets/tags.html", tags=pkg.tags %}
-  {% snippet "package/snippets/additional_info.html", pkg_dict=pkg_dict %}
+
+  {% snippet "package/snippets/resources_list.html",
+      pkg=pkg,
+      resources=pkg.resources
+  %}
+
+  {% snippet "package/snippets/tags.html",
+      tags=pkg.tags
+  %}
+
+  {% snippet "package/snippets/additional_info.html",
+      pkg_dict=pkg
+  %}
+
 {% endblock %}
