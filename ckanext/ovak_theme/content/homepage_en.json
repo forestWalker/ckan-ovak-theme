@@ -32,7 +32,7 @@
   ],
   "summary": {
     "title": "Project summary",
-    "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+    "body": "The interactive map presents next-day transport forecasts for Szeged, including expected occupancy on trams and trolleybuses and predicted road traffic intensity. Users can select a transport mode, route and time, as well as compare sunny and rainy weather scenarios. The colour-coded map and detailed estimates support journey planning, while registered users can also access health-related epidemic load information associated with public transport stops."
   },
   "news": {
     "title": "News title",

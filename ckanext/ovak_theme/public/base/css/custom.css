@@ -404,7 +404,6 @@ body {
   align-items: center;
 }
 
-.ovak-simple-card__download,
 .ovak-download-button {
   display: inline-flex;
   align-items: center;
@@ -419,13 +418,11 @@ body {
   line-height: 1;
 }
 
-.ovak-simple-card__download:hover,
 .ovak-download-button:hover {
   text-decoration: none;
 }
 
-.ovak-download-button__icon,
-.ovak-simple-card__download-icon {
+.ovak-download-button__icon {
   width: 18px;
   height: 18px;
   display: block;
@@ -2505,7 +2502,6 @@ body {
   justify-content: flex-end;
 }
 
-.ovak-simple-card__download,
 .ovak-download-button,
 .ovak-resource-tab,
 .ovak-plugin-chart-button {
@@ -2514,14 +2510,11 @@ body {
   font-weight: 800;
 }
 
-.ovak-simple-card__download,
 .ovak-download-button {
   background: var(--ovak-ink);
   color: #ffffff;
 }
 
-.ovak-simple-card__download:hover,
-.ovak-simple-card__download:focus,
 .ovak-download-button:hover,
 .ovak-download-button:focus {
   background: var(--ovak-blue-dark);
@@ -2992,7 +2985,6 @@ body {
 .ovak-primary-link,
 .ovak-secondary-link,
 .ovak-simple-card__open,
-.ovak-simple-card__download,
 .ovak-download-button,
 .ovak-edit-button {
   min-height: 44px;
@@ -3365,8 +3357,7 @@ body {
   gap: 10px;
 }
 
-.ovak-simple-card__open,
-.ovak-simple-card__download {
+.ovak-simple-card__open {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -3389,14 +3380,11 @@ body {
   text-decoration: none;
 }
 
-.ovak-simple-card__download,
 .ovak-download-button {
   background: var(--ovak-deep);
   color: #ffffff;
 }
 
-.ovak-simple-card__download:hover,
-.ovak-simple-card__download:focus,
 .ovak-download-button:hover,
 .ovak-download-button:focus {
   background: var(--ovak-teal);

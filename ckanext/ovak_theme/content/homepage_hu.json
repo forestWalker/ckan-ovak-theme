@@ -32,7 +32,7 @@
   ],
   "summary": {
     "title": "Projekt összefoglaló",
-    "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+    "body": "Az interaktív térkép Szeged következő napi közlekedési előrejelzéseit jeleníti meg: a villamosok és trolibuszok várható telítettségét, valamint a közúti forgalom intenzitását. A felhasználó kiválaszthatja a közlekedési módot, a járatot és az időpontot, illetve összehasonlíthatja a napos és esős időjárási forgatókönyveket. A színek és a részletes térképi adatok segítik az utazás megtervezését, míg a regisztrált felhasználók a megállókhoz kapcsolódó egészségügyi, járványterhelési információkat is megtekinthetik."
   },
   "news": {
     "title": "Hír címe",
